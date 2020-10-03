@@ -21,6 +21,7 @@ impl GameMap{
     }
     pub fn create(&self) {
         print!("\x1B[2J\x1B[1;1H");
+        io::stdout().flush().unwrap();
 
         // Top lane
         for i in 0..(self.width + 1) {
@@ -58,6 +59,7 @@ impl GameMap{
         }
 
         print!("\x1B[2J\x1B[1;1H");
+        io::stdout().flush().unwrap();
 
         // Top lane
         for i in 0..(self.width + 1) {
