@@ -1,12 +1,15 @@
 [package]
-name = "WCLG"
+name = "Clig"
 version = "0.1.0"
 description = "A CLI Game engine to make games in CLI"
-license = "GPL"
+license-file = "LICENSE"
 authors = ["Wafelack <wafelack@protonmail.com>"]
 edition = "2018"
 documentation = "README.md"
 documentation = "README.md"
+repository = "https://github.com/Wafelack/Clig"
+keywords = ["gamedev", "cli", "engine"]
+categories = ["game-engine", "cli-games"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
