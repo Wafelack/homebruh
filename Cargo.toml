@@ -2,7 +2,7 @@
 name = "Clig"
 version = "0.1.0"
 description = "A CLI Game engine to make games in CLI"
-license = "GPL"
+license="GPL"
 authors = ["Wafelack <wafelack@protonmail.com>"]
 edition = "2018"
 documentation = "https://github.com/Wafelack/Clig/blob/master/README.md"
