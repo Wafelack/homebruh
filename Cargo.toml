@@ -5,6 +5,8 @@ description = "A CLI Game engine to make games in CLI"
 license = "GPL"
 authors = ["Wafelack <wafelack@protonmail.com>"]
 edition = "2018"
+documentation = "README.md"
+documentation = "README.md"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
