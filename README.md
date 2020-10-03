@@ -1,4 +1,4 @@
-# wcli_game_engine
+# Clig
 Simple game engine to make simple CLI games
 
 ## Functions
