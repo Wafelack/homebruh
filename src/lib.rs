@@ -30,7 +30,9 @@ mod tests {
     #[test]
     fn entities() {
         let mut map = GameMap::new(50, 8, '#');
-        let entities: Vec<Entity> = vec![Entity::new(10, 3, false, '8', false),Entity::new(15, 3, false, '$', false)];
-        map.drawentities(entities);
+        let mut entities: Vec<Entity> = vec![Entity::new(10, 3, false, '8', false),Entity::new(15, 3, false, '$', false)];
+        map.drawentities(&entities);
+        entities[0].move_to(10, 5);
+        map.drawentities(&entities);
     }
 }

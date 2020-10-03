@@ -49,11 +49,11 @@ impl GameMap{
         print!("\n");
         io::stdout().flush().unwrap();
     }
-    pub fn drawentities(&self, entities: Vec<Entity>) {
+    pub fn drawentities(&self, entities: &Vec<Entity>) {
 
         // Security check
-        for entity in &entities {
-            if entity.get_pos().0 >= self.width || entity.get_pos().1 >= self.height {
+        for entity in entities {
+            if entity.get_pos().0 >= self.width || entity.get_pos().1 >= self.height || entity.get_pos().0 <= 0 || entity.get_pos().1 <= 0 {
                 return
             }
         }
@@ -73,7 +73,7 @@ impl GameMap{
         for i in 0..(&self.height+1) {
             print!("{}", self.delimiter);
             for j  in 0..(&self.width - 1) {
-                for entity in &entities {
+                for entity in entities {
                     if entity.get_pos() == (j, i) {
                         print!("{}", entity.symbol());
                         nonefound = false;

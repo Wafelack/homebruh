@@ -11,7 +11,7 @@ impl Entity {
         Entity{posx: x, posy: y, isplayer, symbol, canmove}
     }
     pub fn newdefault(symbol: char) -> Entity {
-        Entity{posx: 0, posy: 0, isplayer: false, symbol, canmove: false}
+        Entity{posx: 1, posy: 1, isplayer: false, symbol, canmove: false}
     }
     pub fn get_pos(&self) -> (u8, u8) {
         (self.posx, self.posy)
