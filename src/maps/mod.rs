@@ -1,2 +1,1 @@
-pub mod printmap;
-pub fn map;
+pub mod map;
