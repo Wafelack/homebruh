@@ -1,6 +1,8 @@
 [package]
-name = "CLIGame"
+name = "WCLG"
 version = "0.1.0"
+description = "A CLI Game engine to make games in CLI"
+license = "GPL"
 authors = ["Wafelack <wafelack@protonmail.com>"]
 edition = "2018"
 

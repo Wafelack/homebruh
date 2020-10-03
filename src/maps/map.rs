@@ -1,5 +1,6 @@
 use std::io::{self, Write};
 use num_traits::sign::Unsigned;
+use crate::entities::entity::*;
 
 pub struct GameMap {
     width: u8,
@@ -33,6 +34,53 @@ impl GameMap{
             print!("{}", self.delimiter);
             for j  in 0..(&self.width - 1) {
                 print!(" ");
+            }
+            print!("{}", self.delimiter);
+            print!("\n");
+            io::stdout().flush().unwrap();
+
+        }
+
+        // Bottom lane
+        for i in 0..(self.width + 1) {
+            print!("{}", self.delimiter);
+        }
+        print!("\n");
+        io::stdout().flush().unwrap();
+    }
+    pub fn drawentities(&self, entities: Vec<Entity>) {
+
+        // Security check
+        for entity in &entities {
+            if entity.get_pos().0 >= self.width || entity.get_pos().1 >= self.height {
+                return
+            }
+        }
+
+        print!("\x1B[2J\x1B[1;1H");
+
+        // Top lane
+        for i in 0..(self.width + 1) {
+            print!("{}", self.delimiter);
+        }
+        print!("\n");
+        io::stdout().flush().unwrap();
+        let mut nonefound = true;
+
+        // Borders
+        for i in 0..(&self.height+1) {
+            print!("{}", self.delimiter);
+            for j  in 0..(&self.width - 1) {
+                for entity in &entities {
+                    if entity.get_pos() == (j, i) {
+                        print!("{}", entity.symbol());
+                        nonefound = false;
+                    }
+                }
+                if nonefound {
+                    print!(" ");
+                }
+                nonefound = true;
             }
             print!("{}", self.delimiter);
             print!("\n");
