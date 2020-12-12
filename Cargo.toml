@@ -1,15 +1,8 @@
 [package]
-name = "Clig"
-version = "0.1.1"
-description = "A CLI Game engine to make games in CLI"
-license="GPL-3.0-or-later"
+name = "CLIGame"
+version = "0.1.0"
 authors = ["Wafelack <wafelack@protonmail.com>"]
 edition = "2018"
-documentation = "https://github.com/Wafelack/Clig/blob/master/README.md"
-readme = "README.md"
-repository = "https://github.com/Wafelack/Clig"
-keywords = ["gamedev", "cli", "engine"]
-categories = ["game-engines"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
