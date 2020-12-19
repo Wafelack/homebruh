@@ -20,10 +20,13 @@ end
 
 exit if updated == false
 
+puts "[+] Found a new arkscript version"
 File.open("packages.json", "w") do |f| 
   f.write(JSON.pretty_generate(packages))
 end
+puts "[+] Added new version to packages.json"
 
 system("git", "add", ".", exception: true)
 system("git", "commit", "-m", ":package: Automatic update of arkscript package", exception: true)
 system("git push", exception: true)
+puts "[+] Successfully deployed the changes"
