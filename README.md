@@ -18,4 +18,4 @@ Yet another rusty package manager
 - Launch a webserver
 - Add your compressed files at the server root (NOTICE: Files have to be compressed using the gunzip algorithms (Use `tar -czf <name> <folder>`))
 - Put your server link into `/etc/yarpm.sources`
-- You can now install your packages
+- You can now install your package
