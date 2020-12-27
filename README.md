@@ -8,10 +8,22 @@ Yet another rusty package manager
 
 ## How to use
 
+### Setup
+
 - Run `yarpm` once to create all the required files
 - Edit `/etc/yarpm.sources` with your sources (one per line)
-- Run `cargo search <package>` to check if your package exists
-- Run `cargo install <package>` to install it in `/etc/yarpm/bin`
+
+### Search packages
+
+- Run `yarpm search <package>` to check if your package exists
+
+### Install packages
+
+- Run `yarpm install <package>` to install it in `/etc/yarpm/bin`
+
+### Update packages
+
+- Run `yarpm upgrade`
 
 ## Publish packages
 
