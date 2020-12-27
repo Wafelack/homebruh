@@ -8,7 +8,7 @@ use std::path::Path;
 fn init() -> Result<(String, String), String> {
     let sources_config = "/etc/yarpm.json";
     let default_sources = "/etc/yarpm.sources";
-    let binaries_path = "/etc/yarpm/bin/";
+    let binaries_path = &format!("{}/.yarpm/bin", dirs::home_dir().unwrap().to_str().unwrap());
     let path_export = &format!("export PATH=\"{}:$PATH\"", binaries_path);
     let bashrc_path = &format!("{}/.bashrc", dirs::home_dir().unwrap().to_str().unwrap());
 
@@ -18,13 +18,12 @@ fn init() -> Result<(String, String), String> {
             Err(e) => return Err(format!("{} - {}", line!(), e)),
         }
     }
-    let mut bashrc = match fs::File::create(bashrc_path) {
-        Ok(f) => f,
-        Err(e) => return Err(format!("{} - {}", line!(), e)),
-    };
-
     let bashrc_content = match fs::read_to_string(bashrc_path) {
         Ok(s) => s,
+        Err(e) => return Err(format!("{} - {}", line!(), e)),
+    };
+    let mut bashrc = match fs::OpenOptions::new().append(true).open(bashrc_path) {
+        Ok(f) => f,
         Err(e) => return Err(format!("{} - {}", line!(), e)),
     };
 
@@ -290,7 +289,7 @@ fn install(
 
     let status = match std::process::Command::new("tar")
         .arg("-xzf")
-        .arg(fname)
+        .arg(&fname)
         .arg("-C")
         .arg(binaries_path)
         .status()
@@ -301,6 +300,11 @@ fn install(
 
     if !status.success() {
         return Err("Failed to extract package".to_string());
+    }
+
+    match fs::remove_file(&fname) {
+        Ok(()) => {}
+        Err(e) => return Err(format!("{}", e)),
     }
 
     eprintln!("Successfully installed package `{}`", package);
