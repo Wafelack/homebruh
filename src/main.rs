@@ -1,16 +1,38 @@
 use clap::{App, Arg, SubCommand};
 use reqwest::StatusCode;
-use serde_json::Value;
 use std::fs;
 use std::io::prelude::*;
 use std::path::Path;
 
-fn init() -> Result<(String, String), String> {
-    let sources_config = "/etc/yarpm.json";
+fn init() -> Result<(String, String, String), String> {
+    let installed_list = "/etc/yarpm.installed";
     let default_sources = "/etc/yarpm.sources";
     let binaries_path = &format!("{}/.yarpm/bin", dirs::home_dir().unwrap().to_str().unwrap());
     let path_export = &format!("export PATH=\"{}:$PATH\"", binaries_path);
     let bashrc_path = &format!("{}/.bashrc", dirs::home_dir().unwrap().to_str().unwrap());
+
+    if !Path::new(installed_list).exists() {
+        match fs::File::create(installed_list) {
+            Ok(_) => {}
+            Err(e) => return Err(format!("{} - {}", line!(), e)),
+        }
+    }
+
+    let content = match fs::read_to_string(installed_list) {
+        Ok(s) => s,
+        Err(e) => return Err(format!("{} - {}", line!(), e)),
+    };
+
+    if content.is_empty() {
+        let mut f = match fs::File::create(installed_list) {
+            Ok(f) => f,
+            Err(e) => return Err(format!("{} - {}", line!(), e)),
+        };
+        match f.write_all(b"# This file is not intended for manual editing\n# Manual manipulation could alterate yarpm functionning\n\n") {
+            Ok(()) => {},
+            Err(e) => return Err(format!("{} - {}", line!(), e)),
+        }
+    }
 
     if !Path::new(binaries_path).exists() {
         match fs::create_dir_all(binaries_path) {
@@ -43,38 +65,30 @@ fn init() -> Result<(String, String), String> {
         }
     }
 
-    let sources_location = if !Path::new(sources_config).exists() {
-        default_sources.to_string()
-    } else {
-        let config_file = match std::fs::read_to_string(sources_config) {
-            Ok(c) => c,
-            Err(e) => return Err(format!("{} - {}", line!(), e)),
-        };
-        let jsoned: Value = match serde_json::from_str(&config_file) {
-            serde_json::Result::Ok(j) => j,
-            serde_json::Result::Err(e) => return Err(format!("{} - {}", line!(), e)),
-        };
-
-        let toret = if let Value::String(s) = jsoned["sources_path"].clone() {
-            s
-        } else {
-            default_sources.to_string()
-        };
-        toret.to_string()
-    };
+    let sources_location = default_sources.to_string();
 
     if !Path::new(&sources_location).exists() {
         match fs::File::create(&sources_location) {
-            Ok(_) => return Ok((sources_location, binaries_path.to_string())),
+            Ok(_) => {
+                return Ok((
+                    sources_location,
+                    binaries_path.to_string(),
+                    installed_list.to_string(),
+                ))
+            }
             Err(e) => return Err(format!("{} - {}", line!(), e)),
         }
     }
 
-    Ok((sources_location.to_string(), binaries_path.to_string()))
+    Ok((
+        sources_location.to_string(),
+        binaries_path.to_string(),
+        installed_list.to_string(),
+    ))
 }
 
 fn main() -> Result<(), String> {
-    let (sources, binaries_path) = init()?;
+    let (sources, binaries_path, installed_list) = init()?;
     if cfg!(windows) {
         return Err("Segmentation fault\nOrigin: WIN32K_PROCESS_HANDLER 0xFAE569".to_string());
     }
@@ -91,11 +105,6 @@ fn main() -> Result<(), String> {
                         .help("Specifies the package to search for")
                         .required(true)
                         .index(1),
-                )
-                .arg(
-                    Arg::with_name("output")
-                        .help("Specifies the output file")
-                        .takes_value(true),
                 ),
         )
         .subcommand(
@@ -130,6 +139,7 @@ fn main() -> Result<(), String> {
                         ),
                 ),
         )
+        .subcommand(SubCommand::with_name("upgrade").about("Updates installed softs"))
         .get_matches();
 
     if let Some(matches) = matches.subcommand_matches("search") {
@@ -151,10 +161,75 @@ fn main() -> Result<(), String> {
         install(
             &sources,
             matches_install.value_of("package").unwrap(),
-            matches_install.value_of("output"),
             &binaries_path,
+            &installed_list,
         )?;
+    } else if let Some(_) = matches.subcommand_matches("upgrade") {
+        upgrade(&installed_list, &binaries_path)?;
     }
+
+    Ok(())
+}
+
+fn upgrade(installed: &str, binaries_path: &str) -> Result<(), String> {
+    let content = match fs::read_to_string(installed) {
+        Ok(s) => s,
+        Err(e) => return Err(format!("{}", e)),
+    };
+
+    let splited = content
+        .split("\n")
+        .filter(|l| !l.starts_with("#"))
+        .filter(|l| l != &"")
+        .collect::<Vec<&str>>();
+
+    eprintln!("Upgrading {} package(s)...", splited.len());
+
+    let mut pairs = vec![];
+
+    for line in &splited {
+        let subsplit = line.split("|").collect::<Vec<&str>>();
+        if subsplit.len() != 2 {
+            return Err(format!("Invalid package line : `{}`", line));
+        }
+        pairs.push((subsplit[0], subsplit[1]));
+    }
+
+    let mut i = 0;
+
+    for (name, link) in pairs {
+        i += 1;
+        eprint!("\rUpgrading package {} out of {}", i, &splited.len());
+        let rawbytes = match reqwest::blocking::get(link) {
+            Ok(r) => r,
+            Err(e) => return Err(format!("{} - {}", line!(), e)),
+        }
+        .bytes();
+        let bytes = match rawbytes {
+            Ok(b) => b.to_vec(),
+            Err(e) => return Err(format!("{} - {}", line!(), e)),
+        };
+
+        let fname = &format!("{}/{}.tar.gz", binaries_path, name);
+
+        if Path::new(fname).exists() {
+            match fs::remove_file(fname) {
+                Ok(()) => {}
+                Err(e) => return Err(format!("{} - {}", line!(), e)),
+            }
+        }
+
+        let mut f = match fs::File::create(fname) {
+            Ok(f) => f,
+            Err(e) => return Err(format!("{} - {}", line!(), e)),
+        };
+
+        match f.write_all(&bytes) {
+            Ok(()) => {}
+            Err(e) => return Err(format!("{} - {}", line!(), e)),
+        }
+    }
+    eprintln!("\n{} packages upgraded", &splited.len());
 
     Ok(())
 }
@@ -209,11 +284,14 @@ enum Status {
     Found(String),
     NotFound,
 }
-fn search(sources: &String, package: &str) -> Result<Status, String> {
+fn search(sources: &str, package: &str) -> Result<Status, String> {
     let raw_sources = match fs::read_to_string(sources) {
         Ok(s) => s,
         Err(e) => return Err(format!("{} - {}", line!(), e)),
     };
+    if raw_sources.trim().is_empty() {
+        return Err("No sources available !".to_string());
+    }
     let sources_content = raw_sources.split("\n").collect::<Vec<&str>>();
 
     for source in sources_content {
@@ -234,10 +312,10 @@ fn search(sources: &String, package: &str) -> Result<Status, String> {
 }
 
 fn install(
-    sources: &String,
+    sources: &str,
     package: &str,
-    output: Option<&str>,
     binaries_path: &str,
+    installed: &str,
 ) -> Result<(), String> {
     let lnk = match search(sources, package)? {
         Status::Found(s) => s,
@@ -255,26 +333,7 @@ fn install(
         Err(e) => return Err(format!("{} - {}", line!(), e)),
     };
 
-    if output.is_some() {
-        let pathed = Path::new(output.unwrap());
-        if !pathed.exists() {
-            match fs::create_dir_all(pathed) {
-                Ok(()) => {}
-                Err(e) => return Err(format!("{} - {}", line!(), e)),
-            }
-        } else if pathed.exists() && pathed.is_dir() {
-            return Err("Cannot use a file as output directory !".to_string());
-        }
-    }
-
-    let (mut file, fname) = if output.is_some() {
-        let fname = format!("{}/{}.tar.gz", output.unwrap(), package);
-        let f = match fs::File::create(&fname) {
-            Ok(f) => f,
-            Err(e) => return Err(format!("{} - {}", line!(), e)),
-        };
-        (f, fname)
-    } else {
+    let (mut file, fname) = {
         let f = match fs::File::create(&format!("{}/{}.tar.gz", binaries_path, package)) {
             Ok(f) => f,
             Err(e) => return Err(format!("{} - {}", line!(), e)),
@@ -303,6 +362,16 @@ fn install(
     }
 
     match fs::remove_file(&fname) {
+        Ok(()) => {}
+        Err(e) => return Err(format!("{}", e)),
+    }
+
+    let mut inst = match fs::OpenOptions::new().append(true).open(installed) {
+        Ok(f) => f,
+        Err(e) => return Err(format!("{}", e)),
+    };
+
+    match inst.write_all(format!("{}|{}\n", package, lnk).as_bytes()) {
         Ok(()) => {}
         Err(e) => return Err(format!("{}", e)),
     }
