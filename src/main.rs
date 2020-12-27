@@ -76,7 +76,7 @@ fn init() -> Result<(String, String), String> {
 fn main() -> Result<(), String> {
     let (sources, binaries_path) = init()?;
     if cfg!(windows) {
-        return Err("This program is not made for windows use !".to_string());
+        return Err("Segmentation fault\nOrigin: WIN32K_PROCESS_HANDLER 0xFAE569".to_string());
     }
 
     let matches = App::new("yarpm")
