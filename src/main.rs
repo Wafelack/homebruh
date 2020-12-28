@@ -177,6 +177,16 @@ fn upgrade(installed: &str, binaries_path: &str) -> Result<(), String> {
         Err(e) => return Err(format!("{}", e)),
     };
 
+    match fs::remove_dir_all(binaries_path) {
+        Ok(()) => {}
+        Err(e) => return Err(format!("{}", e)),
+    }
+
+    match fs::create_dir_all(binaries_path) {
+        Ok(()) => {}
+        Err(e) => return Err(format!("{}", e)),
+    }
+
     let splited = content
         .split("\n")
         .filter(|l| !l.starts_with("#"))
@@ -227,6 +237,26 @@ fn upgrade(installed: &str, binaries_path: &str) -> Result<(), String> {
         match f.write_all(&bytes) {
             Ok(()) => {}
             Err(e) => return Err(format!("{} - {}", line!(), e)),
+        }
+
+        let status = match std::process::Command::new("tar")
+            .arg("-xzf")
+            .arg(&fname)
+            .arg("-C")
+            .arg(binaries_path)
+            .status()
+        {
+            Ok(s) => s,
+            Err(e) => return Err(format!("{} - {}", line!(), e)),
+        };
+
+        if !status.success() {
+            return Err("Failed to extract package".to_string());
+        }
+
+        match fs::remove_file(&fname) {
+            Ok(()) => {}
+            Err(e) => return Err(format!("{}", e)),
         }
     }
     eprintln!("\n{} packages upgraded", &splited.len());
