@@ -322,7 +322,7 @@ fn search(sources: &str, package: &str) -> Result<Status, String> {
     if raw_sources.trim().is_empty() {
         return Err("No sources available !".to_string());
     }
-    let sources_content = raw_sources.split("\n").collect::<Vec<&str>>();
+    let sources_content = raw_sources.trim().split("\n").collect::<Vec<&str>>();
 
     for source in sources_content {
         let full_path = &format!("{}/{}.tar.gz", source, package);
@@ -349,7 +349,7 @@ fn install(
 ) -> Result<(), String> {
     let lnk = match search(sources, package)? {
         Status::Found(s) => s,
-        _ => return Err("Package not found".to_string()),
+        Status::NotFound => return Err("Package not found".to_string()),
     };
 
     let rawbytes = match reqwest::blocking::get(&lnk) {
