@@ -27,7 +27,13 @@ Yet another rusty package manager
 
 ## Publish packages
 
+### Method 1
+
 - Launch a webserver
 - Add your compressed files at the server root (NOTICE: Files have to be compressed using the gunzip algorithms (Use `tar -czf <name> <folder>`))
 - Put your server link into `/etc/yarpm.sources`
-- You can now install your package
+
+### Method 2
+
+- Push your archive to github
+- Add the github raw link in your sources
