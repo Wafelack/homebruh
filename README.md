@@ -27,13 +27,10 @@ Yet another rusty package manager
 
 ## Publish packages
 
-### Method 1
+- To publish packages they have to be available on the internet and they have to be represented by a single `tar.gz` file
+- Publish your package on the internet (a github repo or a server)
+- Add the link to your `/etc/yarpm.sources`
 
-- Launch a webserver
-- Add your compressed files at the server root (NOTICE: Files have to be compressed using the gunzip algorithms (Use `tar -czf <name> <folder>`))
-- Put your server link into `/etc/yarpm.sources`
+## Contributing
 
-### Method 2
-
-- Push your archive to github
-- Add the github raw link in your sources
+See [CONTRIBUTING.md](CONTRIBUTING.md) for contributing rules
