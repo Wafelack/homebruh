@@ -3,9 +3,9 @@ mod packages;
 mod sources;
 
 use clap::{App, Arg, SubCommand};
-use init::init;
-use packages::*;
-use sources::*;
+pub use init::init;
+pub use packages::*;
+pub use sources::*;
 
 fn main() -> Result<(), String> {
     let (sources, binaries_path, installed_list) = init()?;
@@ -89,4 +89,91 @@ fn main() -> Result<(), String> {
     }
 
     Ok(())
+}
+
+#[cfg(test)]
+mod test {
+    const ARCHIVE_LINK: &str = "https://github.com/Wafelack/yarpm/raw/master/";
+    use std::{fs, fs::File};
+
+    fn setup(
+        installed_list: &str,
+        sources: &str,
+        binaries: &str,
+    ) -> Result<(String, String, String), String> {
+        match File::create(installed_list) {
+            Ok(_) => {}
+            Err(e) => return Err(format!("{} - {}", line!(), e)),
+        }
+        match File::create(sources) {
+            Ok(_) => {}
+            Err(e) => return Err(format!("{} - {}", line!(), e)),
+        }
+        match fs::create_dir(binaries) {
+            Ok(_) => {}
+            Err(e) => return Err(format!("{} - {}", line!(), e)),
+        }
+
+        Ok((
+            installed_list.to_string(),
+            sources.to_string(),
+            binaries.to_string(),
+        ))
+    }
+    fn cleanup(installed_list: &str, sources: &str, binaries: &str) -> Result<(), String> {
+        super::sources::remove(ARCHIVE_LINK, &sources)?;
+
+        match fs::remove_file(installed_list) {
+            Ok(_) => {}
+            Err(e) => return Err(format!("{} - {}", line!(), e)),
+        }
+
+        match fs::remove_file(sources) {
+            Ok(_) => {}
+            Err(e) => return Err(format!("{} - {}", line!(), e)),
+        }
+        match fs::remove_dir_all(binaries) {
+            Ok(_) => {}
+            Err(e) => return Err(format!("{} - {}", line!(), e)),
+        }
+
+        Ok(())
+    }
+
+    fn setup_sources(sources: &str) -> Result<(), String> {
+        super::sources::add(ARCHIVE_LINK, sources)
+    }
+
+    #[test]
+    fn _search() -> Result<(), String> {
+        let installed_list = "./installedSearch";
+        let sources_path = "./sourcesSearch";
+        let binaries_path = "./binariesSearch";
+        let (installed, sources, binaries) = setup(installed_list, sources_path, binaries_path)?;
+        setup_sources(&sources)?;
+        let res = super::packages::search(&sources, "yarpm")?;
+
+        match res {
+            super::packages::Status::Found(s) => {
+                cleanup(installed_list, sources_path, binaries_path)?;
+                assert_eq!(s, format!("{}/yarpm.tar.gz", ARCHIVE_LINK));
+                return Ok(());
+            }
+            _ => {
+                cleanup(installed_list, sources_path, binaries_path)?;
+                return Err("Archive not found".to_string());
+            }
+        }
+    }
+
+    #[test]
+    fn _install() -> Result<(), String> {
+        let installed_list = "./installedInstall";
+        let sources_path = "./sourcesInstall";
+        let binaries_path = "./binariesInstall";
+        let (installed, sources, binaries) = setup(installed_list, sources_path, binaries_path)?;
+        setup_sources(&sources)?;
+        super::packages::install(&sources, "yarpm", &binaries, &installed)?;
+        cleanup(installed_list, sources_path, binaries_path)
+    }
 }
