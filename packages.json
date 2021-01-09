@@ -1,0 +1,10 @@
+[
+  {
+    "name": "wng",
+    "version": "3.5.0",
+    "authors": [
+      "Wafelack <wafelack@protonmail.com>"
+    ],
+    "source": "https://github.com/Wafelack/wng/releases/download/3.5.0/wng"
+  }
+]
