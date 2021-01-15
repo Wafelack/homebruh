@@ -5,6 +5,7 @@
     "authors": [
       "Wafelack <wafelack@protonmail.com>"
     ],
+    "description": "Wanager is a package and projects manager for C and C++",
     "source": "https://github.com/Wafelack/wng/releases/download/3.5.0/wng"
   }
 ]

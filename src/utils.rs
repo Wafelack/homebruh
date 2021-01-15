@@ -4,6 +4,7 @@ use std::fs;
 #[derive(Serialize, Deserialize, PartialEq, Debug)]
 pub struct Package {
   pub name: String,
+  description: String,
   authors: Vec<String>,
   version: String,
   source: String,
@@ -20,6 +21,13 @@ impl Package {
       version: version.to_owned(),
       source: source.to_owned(),
     }
+  }
+}
+
+impl std::fmt::Display for Package {
+  fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+    write!(f, "")
+    Ok(())
   }
 }
 
