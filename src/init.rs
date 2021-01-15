@@ -1,7 +1,7 @@
-use crate::utils::package::Package;
 use std::fs;
 use std::io::prelude::*;
 use std::path::Path;
+use crate::utils::*;
 
 pub fn init() -> Result<Vec<Package>, String> {
   let sources_path = &format!(
@@ -72,15 +72,7 @@ pub fn init() -> Result<Vec<Package>, String> {
       Err(e) => return Err(e.to_string()),
     }
   }
-
-  let packages_content = match fs::read_to_string(sources_path) {
-    Ok(s) => s,
-    Err(e) => return Err(e.to_string()),
-  };
-
-  let packages: Vec<Package> = match serde_json::from_str(&packages_content) {
-    Ok(v) => v,
-    Err(e) => return Err(e.to_string()),
-  };
-  Ok(packages)
+  get_packages()
 }
+
+

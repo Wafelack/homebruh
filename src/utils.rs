@@ -1,8 +1,9 @@
 use serde::{Deserialize, Serialize};
+use std::fs;
 
 #[derive(Serialize, Deserialize, PartialEq, Debug)]
 pub struct Package {
-  name: String,
+  pub name: String,
   authors: Vec<String>,
   version: String,
   source: String,
@@ -20,4 +21,21 @@ impl Package {
       source: source.to_owned(),
     }
   }
+}
+
+pub fn get_packages() -> Result<Vec<Package>, String> {
+  let sources_path = &format!(
+    "{}/.yarpm.sources",
+    dirs::home_dir().unwrap().to_str().unwrap()
+  );
+  let packages_content = match fs::read_to_string(sources_path) {
+    Ok(s) => s.to_owned(),
+    Err(e) => return Err(e.to_string()),
+  };
+
+  let packages: Vec<Package> = match serde_json::from_str(&packages_content) {
+    Ok(v) => v,
+    Err(e) => return Err(e.to_string()),
+  };
+  Ok(packages)
 }

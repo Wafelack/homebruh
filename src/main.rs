@@ -1,16 +1,24 @@
+mod init;
 mod utils;
+mod packages;
 
 fn main() -> Result<(), String> {
-    let packages_list = utils::init::init()?;
+    let packages_list = init::init()?;
     println!("{:?}", packages_list);
     Ok(())
 }
 
 #[cfg(test)]
 mod test {
+    use crate::utils::Package;
+    use crate::packages::*;
 
-    use super::*;
-    use utils::package::Package;
+    #[test]
+    fn search_package() -> Result<(), String> {
+        let res = search("wng")?;
+        println!("{:?}", res);
+        Ok(())
+    }
 
     #[test]
     fn package_serialization() {
