@@ -72,7 +72,10 @@ pub fn init() -> Result<Vec<Package>, String> {
       Err(e) => return Err(e.to_string()),
     }
   }
-  get_packages()
+  get_packages(&format!(
+    "{}/.yarpm.sources",
+    dirs::home_dir().unwrap().to_str().unwrap()
+  ))
 }
 
 
