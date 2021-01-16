@@ -2,9 +2,39 @@ mod init;
 mod utils;
 mod packages;
 
+use clap::{Arg,App, SubCommand};
+use packages::{install, search};
+
 fn main() -> anyhow::Result<()> {
-    let packages_list = init::init()?;
-    println!("{:?}", packages_list);
+    let matches = App::new("werb")
+                    .version(env!("CARGO_PKG_VERSION"))
+                    .author(env!("CARGO_PKG_AUTHORS"))
+                    .about("Yet another rusty package manager")
+                    .subcommand(SubCommand::with_name("search")
+                            .arg(Arg::with_name("package")
+                                    .required(true)
+                                    .takes_value(true)
+                                    .index(1))
+                    )
+                    .subcommand(SubCommand::with_name("install")
+                        .arg(Arg::with_name("package")
+                            .index(1)
+                            .required(true)
+                            .takes_value(true)
+                        )
+                        .arg(Arg::with_name("force")
+                            .short("f")
+                            .long("force")
+                            .takes_value(false)))
+                    .get_matches();
+    init::init()?;
+
+    if let Some(matches) = matches.subcommand_matches("search") {
+        println!("{}", search(matches.value_of("package").unwrap())?);
+    } else if let Some(matches) = matches.subcommand_matches("install") {
+        install(matches.value_of("package").unwrap(), !matches.is_present("force"))?;
+    }
+
     Ok(())
 }
 
