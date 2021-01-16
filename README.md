@@ -40,7 +40,7 @@ _**NOTE**: All the published packages has to be in a single tar.gz file !_
 - **Prerequisties**: You have to have ruby installed
 
 - Fork this repository
-- Clone the produced repository with: `git clone git@ŋithub.com:$USERNAME/werb.git` (obviously replace $USERNAME with your github username)
+- Clone the produced repository with: `git clone git@github.com:$USERNAME/werb.git` (obviously replace $USERNAME with your github username)
 - Run `cd werb/ && chmod 751 add_package.rb`
 - Follow the script instructions
 - Commit your changes with this message: `:package: Added $PACKAGE_NAME package` (obviously replace $PACKAGE_NAME with your package name)
@@ -53,7 +53,7 @@ _**NOTE**: All the published packages has to be in a single tar.gz file !_
 
 
 - Fork this repository
-- Clone the produced repository with: `git clone git@ŋithub.com:$USERNAME/werb.git` (obviously replace $USERNAME with your github username)
+- Clone the produced repository with: `git clone git@github.com:$USERNAME/werb.git` (obviously replace $USERNAME with your github username)
 - Go in the produced directory
 - Edit `packages.json` with your changes
 - Commit your changes with this message: `:package: Edited $PACKAGE_NAME package` (obviously replace $PACKAGE_NAME with your package name)
