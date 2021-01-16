@@ -9,7 +9,7 @@ pub fn init() -> anyhow::Result<Vec<Package>> {
     dirs::home_dir().unwrap().to_str().unwrap()
   );
 
-  let distant_path = "https://github.com/Wafelack/werb/raw/rewrite/packages.json";
+  let distant_path = "https://github.com/Wafelack/werb/raw/dev/packages.json";
   let binaries_path = &format!("{}/.werb_bin", dirs::home_dir().unwrap().to_str().unwrap());
   let path_export = &format!("export PATH=\"{}:$PATH\"", binaries_path);
   let bashrc_path = &format!("{}/.bashrc", dirs::home_dir().unwrap().to_str().unwrap());
