@@ -4,10 +4,10 @@ use std::fs;
 #[derive(Serialize, Deserialize, PartialEq, Debug)]
 pub struct Package {
   pub name: String,
-  description: String,
-  authors: Vec<String>,
-  version: String,
-  source: String,
+  pub description: String,
+  pub authors: Vec<String>,
+  pub version: String,
+  pub source: String,
 }
 
 impl Package {

@@ -1,11 +1,11 @@
 [
   {
-    "name": "wng",
-    "version": "3.5.0",
+    "name": "nixt",
+    "version": "0.1.0-alphas",
     "authors": [
       "Wafelack <wafelack@protonmail.com>"
     ],
-    "description": "Wanager is a package and projects manager for C and C++",
-    "source": "N/A"
+    "description": "Nixt is a lisp inspired interpreted programming language",
+    "source": "https://github.com/Wafelack/nixt/releases/download/0.1.0-alpha/nixt.tar.gz"
   }
 ]
