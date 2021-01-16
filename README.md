@@ -29,10 +29,6 @@ You can either:
 
 - Run `werb install <package> [-f | --force]` to install it in `~/.werb_bin`
 
-### Update packages
-
-- Run `yarpm upgrade`
-
 ## Publish packages
 
 _**NOTE**: All the published packages has to be in a single tar.gz file !_
