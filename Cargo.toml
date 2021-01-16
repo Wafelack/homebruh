@@ -18,3 +18,5 @@ serde = { version = "1.0", features = ["derive"] }
 dirs = "3.0.1"
 flate2 = "1.0.19"
 tar = "0.4.30"
+colored = "2"
+anyhow = "1.0"

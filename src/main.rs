@@ -2,7 +2,7 @@ mod init;
 mod utils;
 mod packages;
 
-fn main() -> Result<(), String> {
+fn main() -> anyhow::Result<()> {
     let packages_list = init::init()?;
     println!("{:?}", packages_list);
     Ok(())
@@ -11,22 +11,28 @@ fn main() -> Result<(), String> {
 #[cfg(test)]
 mod test {
     use crate::utils::*;
+    use super::*;
+
 
     #[test]
-    fn search_package() -> Result<(), String> {
+    fn installation() ->  anyhow::Result<()> {
+        init::init()?;
+        packages::install("nixt", false)?;
+        Ok(())
+    }
+    #[test]
+    fn search_package() -> anyhow::Result<()> {
         let packages = get_packages("packages.json")?;
 
-        let mut toret: Option<Package> = None;
+        let mut has_to_be_here: Option<Package> = None;
 
         for package in packages {
-            if package.name == "wng" {
-                toret = Some(package);
+            if package.name == "nixt" {
+                has_to_be_here = Some(package);
             }
         }
 
-        assert!(toret.is_some());
-
-        println!("{}", toret.unwrap());
+        assert!(has_to_be_here.is_some());
         Ok(())
     }
 

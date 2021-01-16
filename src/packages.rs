@@ -1,11 +1,12 @@
 use std::io::Write;
 use std::fs;
+use colored::*;
 
 use crate::utils::*;
 use flate2::read::GzDecoder;
 use tar::Archive;
 
-pub fn search(name :&str) -> Result<Package, String> {
+pub fn search(name :&str) -> anyhow::Result<Package> {
     let packages = get_packages(&format!(
         "{}/.yarpm.sources",
         dirs::home_dir().unwrap().to_str().unwrap()
@@ -17,67 +18,57 @@ pub fn search(name :&str) -> Result<Package, String> {
         }
     }
 
-    return Err(format!("No packages matching `{}` were found", name));
+    Err(
+        anyhow::anyhow!(format!("Cannot find package `{}`", name))
+    )
 }
-pub fn install(name :&str) -> Result<(), String> {
+pub fn install(name :&str, confirm: bool) -> anyhow::Result<()> {
     let binaries_path = &format!("{}/.yarpm_bin", dirs::home_dir().unwrap().to_str().unwrap());
     let package = search(name)?;
     let fp = &format!("{}/{}.tar.gz", binaries_path, package.name);
 
-    let status = match reqwest::blocking::get(&package.source) {
-        Ok(r) => r,
-        Err(e) => return Err(e.to_string()),
-    }.status();
+    let status =  reqwest::blocking::get(&package.source)?.status();
 
     if !status.is_success() {
-        return Err(format!("HTTP error occured: code {}", status.as_u16()));
+        return Err(anyhow::anyhow!(format!("HTTP error occured: code {}", status.as_u16())));
+    }
+    eprintln!("[ {} ] Found a package matching `{}`", "Ok".green(), name);
+
+    if confirm {
+        let mut choice = String::new();
+        println!("{}", &package);
+        print!("Do you want to install this package ? [y/N] ");
+        std::io::stdout().flush()?;
+        std::io::stdin().read_line(&mut choice)?;
+    
+        if choice.trim().to_uppercase() != "Y" {
+            println!("Aborting");
+            return Ok(())
+        }
     }
 
-    let mut choice = String::new();
-    println!("{}", &package);
-    print!("Do you want to install this package ? [y/N] ");
-    std::io::stdout().flush().unwrap();
-    std::io::stdin().read_line(&mut choice).unwrap();
+    let bytes = reqwest::blocking::get(&package.source)?.bytes()?.to_vec();
 
-    if choice.trim().to_uppercase() != "Y" {
-        println!("Aborting");
-        return Ok(())
-    }
+    eprintln!("[ {} ] Downloaded {} from {}", "Ok".green(), pretty_bytes(bytes.len()), &package.source);
 
-    let bytes = match {
-        match reqwest::blocking::get(&package.source) {
-            Ok( r) => r,
-            Err(e) => return Err(e.to_string())
-        }.bytes()
-    } {
-        Ok(b) => b.to_vec(),
-        Err(e) => return Err(e.to_string()),
-    };
+    let mut raw = fs::File::create(fp)?;
+    raw.write_all(&bytes)?;
 
-    let mut raw = match fs::File::create(fp) {
-        Ok(f) => f,
-        Err(e) => return Err(e.to_string()),
-    };
-    match raw.write_all(&bytes) {
-        Ok(_) => {}
-        Err(e) => return Err(e.to_string()),
-    };
+    eprintln!("[ {} ] Installed archive", "Ok".green());
 
-    let tar_gz = match fs::File::open(fp) {
-        Ok(f) => f,
-        Err(e) => return Err(e.to_string()),
-    };
+    let tar_gz = fs::File::open(fp)?;
 
     let tar = GzDecoder::new(tar_gz);
     let mut archive = Archive::new(tar);
-    match fs::remove_file(fp) {
-        Ok(_) => {}
-        Err(e) => return Err(e.to_string()),
-    };
-    match archive.unpack(binaries_path) {
-        Ok(_) => {}
-        Err(e) => return Err(e.to_string()),
-    }
+    fs::remove_file(fp)?;
+
+    eprintln!("[ {} ] Decompressed archive", "Ok".green());
+
+    archive.unpack(binaries_path)?;
+
+    eprintln!("[ {} ] Unpacked archive", "Ok".green());
+
+    eprintln!("Successfully installed package {} version {}", package.name, package.version);
 
     Ok(())
 }

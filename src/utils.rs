@@ -35,15 +35,22 @@ impl std::fmt::Display for Package {
   }
 }
 
-pub fn get_packages(sources_path: &str) -> Result<Vec<Package>, String> {
-  let packages_content = match fs::read_to_string(sources_path) {
-    Ok(s) => s.to_owned(),
-    Err(e) => return Err(e.to_string()),
-  };
+pub fn get_packages(sources_path: &str) -> anyhow::Result<Vec<Package>> {
+  let packages_content = fs::read_to_string(sources_path)?;
 
-  let packages: Vec<Package> = match serde_json::from_str(&packages_content) {
-    Ok(v) => v,
-    Err(e) => return Err(e.to_string()),
-  };
+  let packages: Vec<Package> = serde_json::from_str(&packages_content)?;
   Ok(packages)
+  
 }
+
+  pub fn pretty_bytes(bytes: usize) -> String {
+    if bytes > 1000000000 {
+      format!("{} GB", bytes as f32 / 1000000000.)
+    } else if bytes > 1000000 {
+      format!("{} MB", bytes as f32 / 1000000.)
+    } else if bytes > 1000 {
+      format!("{} kB", bytes as f32 / 1000.)
+    } else {
+      format!("{} B", bytes)
+    }
+  }

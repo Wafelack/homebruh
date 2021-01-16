@@ -3,7 +3,7 @@ use std::io::prelude::*;
 use std::path::Path;
 use crate::utils::*;
 
-pub fn init() -> Result<Vec<Package>, String> {
+pub fn init() -> anyhow::Result<Vec<Package>> {
   let sources_path = &format!(
     "{}/.yarpm.sources",
     dirs::home_dir().unwrap().to_str().unwrap()
@@ -15,47 +15,21 @@ pub fn init() -> Result<Vec<Package>, String> {
   let bashrc_path = &format!("{}/.bashrc", dirs::home_dir().unwrap().to_str().unwrap());
 
   if Path::new(sources_path).exists() {
-    match fs::remove_file(sources_path) {
-      Ok(()) => {}
-      Err(e) => return Err(e.to_string()),
-    }
+     fs::remove_file(sources_path)?;
   }
 
-  let r_body = match reqwest::blocking::get(distant_path) {
-    Ok(r) => r,
-    Err(e) => return Err(e.to_string()),
-  }
-  .bytes();
+  let bytes =  reqwest::blocking::get(distant_path)?
+  .bytes()?;
 
-  let bytes = match r_body {
-    Ok(b) => b.to_vec(),
-    Err(e) => return Err(e.to_string()),
-  };
+  let mut f =  fs::File::create(sources_path)?;
 
-  let mut f = match fs::File::create(sources_path) {
-    Ok(f) => f,
-    Err(e) => return Err(e.to_string()),
-  };
-
-  match f.write_all(&bytes) {
-    Ok(()) => {}
-    Err(e) => return Err(e.to_string()),
-  }
+  f.write_all(&bytes)?;
   if !Path::new(binaries_path).exists() {
-    match fs::create_dir_all(binaries_path) {
-      Ok(()) => {}
-      Err(e) => return Err(e.to_string()),
-    }
+     fs::create_dir_all(binaries_path)?;
   }
 
-  let bashrc_content = match fs::read_to_string(bashrc_path) {
-    Ok(s) => s,
-    Err(e) => return Err(e.to_string()),
-  };
-  let mut bashrc = match fs::OpenOptions::new().append(true).open(bashrc_path) {
-    Ok(f) => f,
-    Err(e) => return Err(e.to_string()),
-  };
+  let bashrc_content = fs::read_to_string(bashrc_path)?;
+  let mut bashrc = fs::OpenOptions::new().append(true).open(bashrc_path)?;
 
   let mut already_written = false;
 
@@ -67,10 +41,7 @@ pub fn init() -> Result<Vec<Package>, String> {
   }
 
   if !already_written {
-    match bashrc.write_all(&format!("\n{}", path_export).as_bytes()) {
-      Ok(()) => {}
-      Err(e) => return Err(e.to_string()),
-    }
+    bashrc.write_all(&format!("\n{}", path_export).as_bytes())?;
   }
   get_packages(&format!(
     "{}/.yarpm.sources",
