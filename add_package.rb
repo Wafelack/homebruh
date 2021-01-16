@@ -25,7 +25,7 @@ while true
     print "Write package link (remember: all packages have to be a single .tar.gz file): "
     source = gets.strip
     print "Write package authors (separated by a comma): "
-    authors = gets.split ','
+    authors = gets.strip.split ','
 
     puts "\n    Summary\n==============="
 
