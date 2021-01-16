@@ -8,7 +8,7 @@ use tar::Archive;
 
 pub fn search(name :&str) -> anyhow::Result<Package> {
     let packages = get_packages(&format!(
-        "{}/.yarpm.sources",
+        "{}/.werb.sources",
         dirs::home_dir().unwrap().to_str().unwrap()
       ))?;
 
@@ -23,7 +23,7 @@ pub fn search(name :&str) -> anyhow::Result<Package> {
     )
 }
 pub fn install(name :&str, confirm: bool) -> anyhow::Result<()> {
-    let binaries_path = &format!("{}/.yarpm_bin", dirs::home_dir().unwrap().to_str().unwrap());
+    let binaries_path = &format!("{}/.werb_bin", dirs::home_dir().unwrap().to_str().unwrap());
     let package = search(name)?;
     let fp = &format!("{}/{}.tar.gz", binaries_path, package.name);
 
@@ -32,7 +32,7 @@ pub fn install(name :&str, confirm: bool) -> anyhow::Result<()> {
     if !status.is_success() {
         return Err(anyhow::anyhow!(format!("HTTP error occured: code {}", status.as_u16())));
     }
-    eprintln!("[ {} ] Found a package matching `{}`", "Ok".green(), name);
+    eprintln!("[ {} ] Found a package matching `{}`", "OK".green(), name);
 
     if confirm {
         let mut choice = String::new();
@@ -49,12 +49,12 @@ pub fn install(name :&str, confirm: bool) -> anyhow::Result<()> {
 
     let bytes = reqwest::blocking::get(&package.source)?.bytes()?.to_vec();
 
-    eprintln!("[ {} ] Downloaded {} from {}", "Ok".green(), pretty_bytes(bytes.len()), &package.source);
+    eprintln!("[ {} ] Downloaded {} from {}", "OK".green(), pretty_bytes(bytes.len()), &package.source);
 
     let mut raw = fs::File::create(fp)?;
     raw.write_all(&bytes)?;
 
-    eprintln!("[ {} ] Installed archive", "Ok".green());
+    eprintln!("[ {} ] Installed archive", "OK".green());
 
     let tar_gz = fs::File::open(fp)?;
 
@@ -62,11 +62,11 @@ pub fn install(name :&str, confirm: bool) -> anyhow::Result<()> {
     let mut archive = Archive::new(tar);
     fs::remove_file(fp)?;
 
-    eprintln!("[ {} ] Decompressed archive", "Ok".green());
+    eprintln!("[ {} ] Decompressed archive", "OK".green());
 
     archive.unpack(binaries_path)?;
 
-    eprintln!("[ {} ] Unpacked archive", "Ok".green());
+    eprintln!("[ {} ] Unpacked archive", "OK".green());
 
     eprintln!("Successfully installed package {} version {}", package.name, package.version);
 

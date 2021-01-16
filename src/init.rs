@@ -5,12 +5,12 @@ use crate::utils::*;
 
 pub fn init() -> anyhow::Result<Vec<Package>> {
   let sources_path = &format!(
-    "{}/.yarpm.sources",
+    "{}/.werb.sources",
     dirs::home_dir().unwrap().to_str().unwrap()
   );
 
-  let distant_path = "https://github.com/Wafelack/yarpm/raw/rewrite/packages.json";
-  let binaries_path = &format!("{}/.yarpm_bin", dirs::home_dir().unwrap().to_str().unwrap());
+  let distant_path = "https://github.com/Wafelack/werb/raw/rewrite/packages.json";
+  let binaries_path = &format!("{}/.werb_bin", dirs::home_dir().unwrap().to_str().unwrap());
   let path_export = &format!("export PATH=\"{}:$PATH\"", binaries_path);
   let bashrc_path = &format!("{}/.bashrc", dirs::home_dir().unwrap().to_str().unwrap());
 
@@ -44,7 +44,7 @@ pub fn init() -> anyhow::Result<Vec<Package>> {
     bashrc.write_all(&format!("\n{}", path_export).as_bytes())?;
   }
   get_packages(&format!(
-    "{}/.yarpm.sources",
+    "{}/.werb.sources",
     dirs::home_dir().unwrap().to_str().unwrap()
   ))
 }

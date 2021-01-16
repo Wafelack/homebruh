@@ -4,13 +4,16 @@ Yet another rusty package manager
 
 ## Install
 
-- Run `cargo install yarpm` to install program
+You can either: 
+
+- Run `cargo install werb`
+- Download the binary in the releases
 
 ## How to use
 
 ### Setup
 
-- Run `yarpm` once to create all the required files
+- Run `werb` once to create all the required files
 - Edit `/etc/yarpm.sources` with your sources (one per line)
 
 ### Search packages
