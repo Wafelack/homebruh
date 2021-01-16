@@ -35,7 +35,7 @@ _**NOTE**: All the published packages has to be in a single tar.gz file !_
 
 ### Adding a new package
 
-**WARNING: If you just want to UPDATE an existing package, go to the [editing section](#editing-existing-package)**
+**WARNING: If you just want to UPDATE an existing package, go to the [editing section](#edit-an-existing-package)**
 
 - **Prerequisties**: You have to have ruby installed
 
