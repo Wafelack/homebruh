@@ -1,11 +1,11 @@
 [
   {
     "name": "nixt",
-    "version": "0.1.0-alpha",
+    "version": "0.1.0",
     "authors": [
       "Wafelack <wafelack@protonmail.com>"
     ],
-    "description": "Nixt is a lisp inspired interpreted programming language",
-    "source": "https://github.com/Wafelack/nixt/releases/download/0.1.0-alpha/nixt.tar.gz"
+    "description": "Nixt is a lisp inspired interpreted programming language written in Rust",
+    "source": "https://github.com/Wafelack/nixt/releases/download/0.1.0/nixt.tar.gz"
   }
 ]
