@@ -9,3 +9,9 @@ All changes will be written here
 - Install command
 - Search command
 - Package submission script
+
+## 0.1.1 - 01-18-2021
+
+### Added
+
+- Purge command
