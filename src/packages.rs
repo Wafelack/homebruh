@@ -72,3 +72,78 @@ pub fn install(name :&str, confirm: bool) -> anyhow::Result<()> {
 
     Ok(())
 }
+
+
+pub fn purge(name :&str) -> anyhow::Result<()> {
+    let binaries_path = &format!("{}/.werb_bin", dirs::home_dir().unwrap().to_str().unwrap());
+    let package = search(name)?;
+    let fp = &format!("{}/{}.tar.gz", binaries_path, package.name);
+
+    let status =  reqwest::blocking::get(&package.source)?.status();
+
+    if !status.is_success() {
+        return Err(anyhow::anyhow!(format!("HTTP error occured: code {}", status.as_u16())));
+    }
+    eprintln!("[ {} ] Found a package matching `{}`", "OK".green(), name);
+
+        let mut choice = String::new();
+        println!("{}", &package);
+        print!("Do you want to purge this package ? [y/N] ");
+        std::io::stdout().flush()?;
+        std::io::stdin().read_line(&mut choice)?;
+
+        if choice.trim().to_uppercase() != "Y" {
+            println!("Aborting");
+            return Ok(())
+        }
+
+    let bytes = reqwest::blocking::get(&package.source)?.bytes()?.to_vec();
+
+    eprintln!("[ {} ] Downloaded {} from {}", "OK".green(), pretty_bytes(bytes.len()), &package.source);
+
+    let mut raw = fs::File::create(fp)?;
+    raw.write_all(&bytes)?;
+
+    let tar_gz = fs::File::open(fp)?;
+
+    let tar = GzDecoder::new(tar_gz);
+    let mut archive = Archive::new(tar);
+    fs::remove_file(fp)?;
+
+    eprintln!("[ {} ] Getting decompressed archive", "OK".green());
+
+    eprintln!("[ {} ] Reading archive", "OK".green());
+
+    let entries = archive.entries()?;
+    let mut i = 1;
+    let mut dirs = Vec::new();
+
+    use std::path::Path;
+
+   for file in entries {
+       let file = file.unwrap();
+       let path = file.header().path().unwrap();
+       let name = format!("{}/{}", binaries_path, path.to_str().unwrap());
+       eprint!("\rRemoving package files ................. {} out of {}", i,"?" );
+
+        if Path::new(&name).is_dir() {
+            dirs.push(name);
+            continue;
+        }
+
+
+       fs::remove_file(name)?;
+       i += 1;
+
+   }
+
+    for dir in &dirs {
+        fs::remove_dir_all(dir)?;
+    }
+
+    eprintln!("\rRemoving package files ................. {} out of {}", i,i );
+
+    eprintln!("[ {} ] Successfully purged package {}", "OK".green(), package.name);
+
+    Ok(())
+}

@@ -3,7 +3,7 @@ mod utils;
 mod packages;
 
 use clap::{Arg,App, SubCommand};
-use packages::{install, search};
+use packages::{install, search, purge};
 
 fn main() -> anyhow::Result<()> {
     let matches = App::new("werb")
@@ -16,6 +16,11 @@ fn main() -> anyhow::Result<()> {
                                     .takes_value(true)
                                     .index(1))
                     )
+        .subcommand(SubCommand::with_name("purge")
+            .arg(Arg::with_name("package")
+                .index(1)
+                .required(true)
+                .takes_value(true)))
                     .subcommand(SubCommand::with_name("install")
                         .arg(Arg::with_name("package")
                             .index(1)
@@ -33,6 +38,8 @@ fn main() -> anyhow::Result<()> {
         println!("{}", search(matches.value_of("package").unwrap())?);
     } else if let Some(matches) = matches.subcommand_matches("install") {
         install(matches.value_of("package").unwrap(), !matches.is_present("force"))?;
+    } else if let Some(matches) = matches.subcommand_matches("purge") {
+        purge(matches.value_of("package").unwrap())?;
     }
 
     Ok(())
