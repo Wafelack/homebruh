@@ -29,6 +29,10 @@ You can either:
 
 - Run `werb install <package> [-f | --force]` to install it in `~/.werb_bin`
 
+### Uninstall packages
+
+- Run `werb purge <package>` to uninstall it
+
 ## Publish packages
 
 _**NOTE**: All the published packages has to be in a single tar.gz file !_
