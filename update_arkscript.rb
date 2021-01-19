@@ -10,7 +10,7 @@ updated = false
 
 packages.each do |p|
   if p["name"] == "arkscript"
-    version = `curl https://httpd.12f.pl/arkscript-version`
+    version = `curl https://httpd.12f.pl/arkscript-version`.strip
     break if p["version"] == version
     p["version"] = version
     updated = true
