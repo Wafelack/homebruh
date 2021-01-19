@@ -37,7 +37,7 @@ You can either:
 
 _**NOTE**: All the published packages has to be in a single tar.gz file !_
 
-### Adding a new package
+<details><summary><h3>Adding a new package</h3></summary>
 
 **WARNING: If you just want to UPDATE an existing package, go to the [editing section](#edit-an-existing-package)**
 
@@ -53,8 +53,9 @@ _**NOTE**: All the published packages has to be in a single tar.gz file !_
 
 - Your package should be accepted within one day
 
-### Edit an existing package
+</details>
 
+<details><summary><h3>Edit an existing package</h3></summary>
 
 - Fork this repository
 - Clone the produced repository with: `git clone git@github.com:$USERNAME/werb.git` (obviously replace $USERNAME with your github username)
@@ -65,3 +66,5 @@ _**NOTE**: All the published packages has to be in a single tar.gz file !_
 - Open a pull request on this repository with this title: `[PACKAGE] Edited $PACKAGE_NAME` (obviously replace $PACKAGE_NAME with your package name)
 
 - Your package should be updated within one day
+
+</details>
