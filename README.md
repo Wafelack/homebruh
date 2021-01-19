@@ -37,7 +37,7 @@ You can either:
 
 _**NOTE**: All the published packages has to be in a single tar.gz file !_
 
-<details><summary><h3>Adding a new package</h3></summary>
+<details><summary>Adding a new package</summary>
 
 **WARNING: If you just want to UPDATE an existing package, go to the [editing section](#edit-an-existing-package)**
 
@@ -55,7 +55,7 @@ _**NOTE**: All the published packages has to be in a single tar.gz file !_
 
 </details>
 
-<details><summary><h3>Edit an existing package</h3></summary>
+<details><summary>Edit an existing package</summary>
 
 - Fork this repository
 - Clone the produced repository with: `git clone git@github.com:$USERNAME/werb.git` (obviously replace $USERNAME with your github username)
