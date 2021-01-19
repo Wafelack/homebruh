@@ -10,7 +10,7 @@ updated = false
 
 packages.each do |p|
   if p["name"] == "arkscript"
-    version = Net::HTTP.get('https://httpd.12f.pl', '/arkscript-version')
+    version = Net::HTTP.get('httpd.12f.pl', '/arkscript-version')
     break if p["version"] == version
     p["version"] = version
     updated = true
