@@ -19,5 +19,17 @@
     ],
     "description": "ArkScript is a small, fast, functional and scripting language for C++ projects",
     "source": "https://httpd.12f.pl/arkscript.tar.gz"
+  },
+  {
+    "name": "deno",
+    "version": "1.7.0",
+    "authors": [
+      "Ryan Dahl <ry@tinyclouds.org>",
+      "Bert Belder",
+      "Kitson Kelly",
+      "Bartek Iwańczuk"
+    ],
+    "description": "Deno is a secure javascript and typescript runtime",
+    "source": "http://xenon.wafelack.fr/deno.tar.gz"
   }
 ]
