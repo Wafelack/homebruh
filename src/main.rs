@@ -58,7 +58,7 @@ mod test {
     #[test]
     fn installation() ->  anyhow::Result<()> {
         init::init()?;
-        packages::install("nixt", false)?;
+        packages::install("nixt", false,true)?;
         Ok(())
     }
     #[test]
