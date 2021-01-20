@@ -15,3 +15,11 @@ All changes will be written here
 ### Added
 
 - Purge command
+
+## 0.1.2 - 01-20-2021
+
+### Added
+
+- Upgrade command
+- Better errors
+- .werb.installed file to store installed files

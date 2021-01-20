@@ -9,13 +9,20 @@ pub fn init() -> anyhow::Result<Vec<Package>> {
     dirs::home_dir().unwrap().to_str().unwrap()
   );
 
-  let distant_path = "https://github.com/Wafelack/werb/raw/dev/packages.json";
+  let installed_path = &format!(
+    "{}/.werb.installed",
+    dirs::home_dir().unwrap().to_str().unwrap()
+  );
+
+  let distant_path = "https://raw.githubusercontent.com/Wafelack/werb/dev/packages.json";
   let binaries_path = &format!("{}/.werb_bin", dirs::home_dir().unwrap().to_str().unwrap());
-  let path_export = &format!("export PATH=\"{}:$PATH\"", binaries_path);
-  let bashrc_path = &format!("{}/.bashrc", dirs::home_dir().unwrap().to_str().unwrap());
 
   if Path::new(sources_path).exists() {
      fs::remove_file(sources_path)?;
+  }
+
+  if !Path::new(installed_path).exists() {
+    fs::File::create(installed_path)?;
   }
 
   let bytes =  reqwest::blocking::get(distant_path)?
@@ -28,21 +35,6 @@ pub fn init() -> anyhow::Result<Vec<Package>> {
      fs::create_dir_all(binaries_path)?;
   }
 
-  let bashrc_content = fs::read_to_string(bashrc_path)?;
-  let mut bashrc = fs::OpenOptions::new().append(true).open(bashrc_path)?;
-
-  let mut already_written = false;
-
-  for line in bashrc_content.split("\n").collect::<Vec<&str>>() {
-    if line == path_export {
-      already_written = true;
-      break;
-    }
-  }
-
-  if !already_written {
-    bashrc.write_all(&format!("\n{}", path_export).as_bytes())?;
-  }
   get_packages(&format!(
     "{}/.werb.sources",
     dirs::home_dir().unwrap().to_str().unwrap()

@@ -15,6 +15,8 @@ You can either:
 - Run `cargo install werb`
 - Download the binary in the releases
 
+You must add `$HOME/.werb_bin` to path to have direct access to your installed packages
+
 ## How to use
 
 ### Setup
