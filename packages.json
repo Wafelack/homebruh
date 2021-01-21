@@ -31,5 +31,14 @@
     ],
     "description": "Deno is a secure javascript and typescript runtime",
     "source": "http://xenon.wafelack.fr/deno.tar.gz"
+  },
+  {
+    "name": "wng",
+    "version": "3.5.0",
+    "authors": [
+      "Wafelack <wafelack@protonmail.com>"
+    ],
+    "description": "wanager is a projects and packages manager for C and C++",
+    "source": "http://xenon.wafelack.fr/wng.tar.gz"
   }
 ]
