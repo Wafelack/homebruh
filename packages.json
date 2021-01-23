@@ -40,5 +40,14 @@
     ],
     "description": "wanager is a projects and packages manager for C and C++",
     "source": "http://xenon.wafelack.fr/wng.tar.gz"
+  },
+  {
+    "name": "vlugger",
+    "version": "0.3.0",
+    "authors": [
+      "Wafelack <wafelack@protonmail.com>"
+    ],
+    "description": "Vlugger is a vim plugin manager",
+    "source": "http://xenon.wafelack.fr/vlugger.tar.gz"
   }
 ]
