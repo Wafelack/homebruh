@@ -58,4 +58,4 @@ File.open("packages.json", "w") do |f|
     f.write(JSON.pretty_generate(packages))
 end
 
-puts "Successfully added package `" + name + "`"
+puts "[+] Successfully added package `" + name + "`"
