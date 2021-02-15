@@ -1,22 +1,12 @@
 [package]
-name = "werb"
-version = "0.1.2"
+name = "homebruh"
+version = "0.1.0"
 authors = ["Wafelack <wafelack@protonmail.com>"]
 edition = "2018"
-description = "Yet another rusty package manager"
-readme = "README.md"
-repository = "https://github.com/wafelack/werb"
-license = "MPL-2.0"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-reqwest = { version = "0.10", features = ["blocking"]}
-clap = "2.3.33"
-serde_json = "1.0"
-serde = { version = "1.0", features = ["derive"] }
-dirs = "3.0.1"
-flate2 = "1.0.19"
-tar = "0.4.30"
-colored = "2"
-anyhow = "1.0"
+toml = "0.5.8"
+flate2 = "1.0.20"
+tar = "0.4.32"
