@@ -19,35 +19,5 @@
     ],
     "description": "ArkScript is a small, fast, functional and scripting language for C++ projects",
     "source": "https://httpd.12f.pl/arkscript.tar.gz"
-  },
-  {
-    "name": "deno",
-    "version": "1.7.0",
-    "authors": [
-      "Ryan Dahl <ry@tinyclouds.org>",
-      "Bert Belder",
-      "Kitson Kelly",
-      "Bartek Iwańczuk"
-    ],
-    "description": "Deno is a secure javascript and typescript runtime",
-    "source": "http://xenon.wafelack.fr/deno.tar.gz"
-  },
-  {
-    "name": "wng",
-    "version": "3.5.0",
-    "authors": [
-      "Wafelack <wafelack@protonmail.com>"
-    ],
-    "description": "wanager is a projects and packages manager for C and C++",
-    "source": "http://xenon.wafelack.fr/wng.tar.gz"
-  },
-  {
-    "name": "vlugger",
-    "version": "0.3.0",
-    "authors": [
-      "Wafelack <wafelack@protonmail.com>"
-    ],
-    "description": "Vlugger is a vim plugin manager",
-    "source": "http://xenon.wafelack.fr/vlugger.tar.gz"
   }
 ]
