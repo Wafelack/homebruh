@@ -51,4 +51,4 @@ To build the package, run `bruh build` in the package directory, this will produ
 
 To install a local package, you will run `bruh install -i $PACKAGE_FILE` with, of cours, your package filename instead of `$PACKAGE_FILE`.
 
-:warning: It may need to be run as super user if the packages creates/removes file at write protected locations.
+:warning: It may need to be run as super user if the packages creates/removes files at write protected locations.
