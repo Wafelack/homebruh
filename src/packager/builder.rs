@@ -1,4 +1,4 @@
-use std::{ffi::OsStr, fmt::Display, fs, path::Path, time::Instant};
+use std::{fs, path::Path, time::Instant};
 use flate2::{Compression, write::GzEncoder};
 use fs::File;
 use tar::Builder;
@@ -11,11 +11,12 @@ use crate::{Error, Result};
 ///
 /// name = "foo"
 /// version = "0.1.0"
-/// on_start = "startup.sh"
-/// on_end = "cleanup.sh"
-/// files = "foo.tar.gz"
-pub fn build<T>(input: T) -> Result<()>
-where T: AsRef<Path> + AsRef<OsStr> + Display {
+/// startup_script = "startup.sh"
+/// cleanup_script = "cleanup.sh"
+/// files = "foo/"
+pub fn build() -> Result<()> {
+
+    let input = "bruh.toml";
 
     if !Path::new(&input).exists() {
         return Err(
@@ -43,7 +44,7 @@ where T: AsRef<Path> + AsRef<OsStr> + Display {
 
     println!("\x1b[0;32mPackaging\x1b[0m `{}` v{}...", map["name"].as_str().unwrap(), map["version"].as_str().unwrap());
 
-    let file = File::create(&format!("{}-{}.tar.gz", map["name"].as_str().unwrap(), map["version"].as_str().unwrap()))?;
+    let file = File::create(&format!("{}-{}.bpkg", map["name"].as_str().unwrap(), map["version"].as_str().unwrap()))?;
 
     println!("\x1b[0;32mCreating\x1b[0m archive...");
 
