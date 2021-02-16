@@ -1,3 +1,5 @@
+use std::todo;
+
 use packager::{builder::build, unbuilder::unbuild};
 
 mod packager;
@@ -12,15 +14,13 @@ fn main() -> Result<()> {
             println!("{} {}",env!("CARGO_PKG_NAME"), env!("CARGO_PKG_VERSION"));
         } else {
             match args[0].as_str() {
-                "build" => if args.len() == 2 {
-                    build(&args[1])?;
+                "build" => build()?,
+                "install" => if args.len() == 2 {
+                    todo!()
+                } else if args.len() == 3 && &args[1] == "-i" {
+                    unbuild(&args[2])?;
                 } else {
-                    println!("Usage: {} build <manifest>.", env!("CARGO_PKG_NAME"));
-                },
-                "unpack" => if args.len() == 2 {
-                    unbuild(&args[1])?;
-                } else {
-                    println!("Usage: {} unpack <package>.", env!("CARGO_PKG_NAME"));
+                    println!("Usage: {} unpack [-i] <package>.", env!("CARGO_PKG_NAME"));
                 }
                 _ => {}
             }
@@ -46,7 +46,9 @@ fn help() {
 
     // Commands
     println!("\nCOMMANDS:");
-    println!("\tbuild $manifest\tBuilds the specified package manifest.");
+    println!("\tbuild                   \tBuilds the package reffering to `bruh.toml`.");
+    println!("\tinstall -i $package_file\tInstalls the specified package file.");
+    println!("\tinstall $package        \tInstalls the specified package from a repository.");
 
     println!();
 }
