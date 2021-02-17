@@ -3,6 +3,7 @@ use std::todo;
 use packager::{builder::build, unbuilder::unbuild};
 
 mod packager;
+mod manager;
 
 fn main() -> Result<()> {
     let args = std::env::args().skip(1).collect::<Vec<String>>();
@@ -58,6 +59,7 @@ pub enum Error {
     IoError(std::io::Error),
     TomlError(TomlError),
     OtherError(String),
+    RequestError(reqwest::Error)
 }
 #[derive(Debug)]
 pub enum TomlError {
@@ -71,6 +73,14 @@ pub type Result<T> = std::result::Result<T, Error>;
 impl From<std::io::Error> for Error {
     fn from(e: std::io::Error) -> Self {
         Self::IoError(e)
+    }
+}
+
+impl From<reqwest::Error> for Error {
+    fn from(e: reqwest::Error) -> Self {
+        Self::RequestError(
+            e
+        )
     }
 }
 
