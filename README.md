@@ -16,9 +16,10 @@ $ cargo build --release
 
 - [x] Packages creation.
 - [x] Local packages installation.
-- [ ] Remote package sources.
+- [x] Local packages uninstallation.
+- [x] Remote package sources.
 - [ ] Remote packages instalation.
-- [ ] Packages publishing.
+- [ ] Remote pacakges uninstallation.
 
 ## Usage
 
@@ -47,8 +48,14 @@ The `files` key directory recreates the filesystem ; e.g. if I have a `usr/bin/b
 
 To build the package, run `bruh build` in the package directory, this will produce a `$NAME-$VERSION.bpkg` file, this is the built package.
 
-## Installing local package
+## Installing a local package
 
-To install a local package, you will run `bruh install -i $PACKAGE_FILE` with, of cours, your package filename instead of `$PACKAGE_FILE`.
+To install a local package, you will run `bruh install -i $PACKAGE_FILE` with, of course, your package filename instead of `$PACKAGE_FILE`.
 
 :warning: It may need to be run as super user if the packages creates/removes files at write protected locations.
+
+## Uninstalling a local package
+
+To uninstall a local package, you will run `bruh uninstall -i $PACKAGE_FILE`.
+
+:warning: It may need to be run as super user if the packages removes files at write protected locations.

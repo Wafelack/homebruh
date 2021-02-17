@@ -3,33 +3,11 @@ use flate2::{read::GzDecoder};
 use fs::{File};
 use tar::Archive;
 use toml::Value;
+use super::see_dir;
 
 use crate::{Error, Result};
 
-fn see_dir<T>(dir: T) -> Result<Vec<String>>
-where T: AsRef<Path> + AsRef<OsStr> {
-    let mut toret = vec![];
-
-    let entries = fs::read_dir(dir)?;
-
-    for entry in entries {
-        let entry = entry?;
-
-        if entry.path().is_dir() {
-            toret.extend(see_dir(entry.path())?);
-        } else {
-            toret.push(
-                entry.path().to_str().unwrap().to_owned()
-            )
-        }
-    }
-
-    Ok(
-        toret
-    )
-}
-
-pub fn unbuild<T>(input: T) -> Result<()>
+pub fn install<T>(input: T) -> Result<()>
 where T: AsRef<Path> + AsRef<OsStr> + Display + ToString {
 
     if !Path::new(&input).exists() {
@@ -144,6 +122,8 @@ where T: AsRef<Path> + AsRef<OsStr> + Display + ToString {
         
     }
 
+    println!("\x1b[0;32mCleaning\x1b[0m packages files");
+    fs::remove_dir_all(dest_folder)?;
     println!("\x1b[0;32mSucessfully\x1b[0m installed {} v{}.", name, version);
 
     Ok(())

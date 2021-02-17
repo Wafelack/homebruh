@@ -4,7 +4,7 @@ use fs::File;
 
 use crate::{Result, Error};
 
-pub fn update() -> Result<()> {
+pub fn sync() -> Result<()> {
     let community_sources_link = "https://raw.githubusercontent.com/Wafelack/homebruh/dev/community/packages.list";
     let packages_path = match env::var("HOME") {
         Ok(s) => format!("{}/.homebruh/packages", s),

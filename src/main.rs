@@ -1,6 +1,7 @@
 use std::todo;
 
-use packager::{builder::build, unbuilder::unbuild};
+use manager::sync::sync;
+use packager::{builder::build, installer::install, uninstaller::uninstall};
 
 mod packager;
 mod manager;
@@ -11,18 +12,28 @@ fn main() -> Result<()> {
     if args.len() > 0 {
         if args.contains(&"--help".to_owned()) {
             help();
+        } else if args.len() == 1 && &args[0] == "help" {
+            help();
         } else if args.contains(&"--version".to_owned()) {
             println!("{} {}",env!("CARGO_PKG_NAME"), env!("CARGO_PKG_VERSION"));
         } else {
             match args[0].as_str() {
                 "build" => build()?,
                 "install" => if args.len() == 2 {
-                    todo!()
-                } else if args.len() == 3 && &args[1] == "-i" {
-                    unbuild(&args[2])?;
-                } else {
-                    println!("Usage: {} unpack [-i] <package>.", env!("CARGO_PKG_NAME"));
-                }
+                        todo!()
+                    } else if args.len() == 3 && &args[1] == "-i" {
+                        install(&args[2])?;
+                    } else {
+                        println!("Usage: {} install [-i] <package>.", env!("CARGO_PKG_NAME"));
+                    }
+                "uninstall" => if args.len() == 2 {
+                        todo!();
+                    } else if args.len() == 3 && &args[1] == "-i" {
+                        uninstall(&args[2])?;
+                    } else {
+                        println!("Usage: {} uninstall [-i] <package>", env!("CARGO_PKG_NAME"))
+                    }
+                "sync" => sync()?,
                 _ => {}
             }
         }
@@ -47,9 +58,11 @@ fn help() {
 
     // Commands
     println!("\nCOMMANDS:");
-    println!("\tbuild                   \tBuilds the package reffering to `bruh.toml`.");
-    println!("\tinstall -i $package_file\tInstalls the specified package file.");
-    println!("\tinstall $package        \tInstalls the specified package from a repository.");
+    println!("\tbuild                     \tBuilds the package reffering to `bruh.toml`.");
+    println!("\tinstall -i $package_file  \tInstalls the specified package file.");
+    println!("\tunisntall -i $package_file\tUninstalls the specified pacakge file.");
+    println!();
+    println!("\tsync                      \tSynchronizes community database.");
 
     println!();
 }
