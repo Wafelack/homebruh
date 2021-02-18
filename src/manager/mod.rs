@@ -1,27 +1,23 @@
-pub mod sync;
 pub mod install;
+pub mod sync;
 
-use std::{fs, fs::{File}, path::Path, io::Write};
+use crate::{Error, Result};
+use sha2::{Digest, Sha256};
+use std::{fs, fs::File, io::Write, path::Path};
 use toml::Value;
-use sha2::{Sha256, Digest};
-use crate::{Result, Error};
 
 fn download_package(package: &str) -> Result<String> {
     let packages_path = "/etc/homebruh/packages";
 
     let pkg = &format!("{}/{}.toml", packages_path, package);
     if !Path::new(pkg).exists() {
-        return Err(
-            Error::OtherError(format!("target not found: {}", package))
-        )
+        return Err(Error::OtherError(format!("target not found: {}", package)));
     }
-    let _pkg = toml::from_str::<Value>(&fs::read_to_string(pkg)?)?;
-    let package_content = _pkg.as_table().unwrap();
-    
+    let pkg = toml::from_str::<Value>(&fs::read_to_string(pkg)?)?;
+    let package_content = pkg.as_table().unwrap();
+
     if !package_content.contains_key("link") || !package_content.contains_key("sha256") {
-        return Err(
-            Error::OtherError("Invalid package manifest.".to_owned())
-        )
+        return Err(Error::OtherError("Invalid package manifest.".to_owned()));
     }
 
     let sha256 = package_content["sha256"].as_str().unwrap();
@@ -32,12 +28,11 @@ fn download_package(package: &str) -> Result<String> {
     hasher.update(&bytes);
     let fhash = format!("{:x}", hasher.finalize());
 
-    if &fhash != sha256 {
-        return Err(
-            Error::OtherError(
-                format!("Invalid sha256 hash.\nExpected: {}\nFound: {}", sha256, fhash)
-            )
-        )
+    if fhash != sha256 {
+        return Err(Error::OtherError(format!(
+            "Invalid sha256 hash.\nExpected: {}\nFound: {}",
+            sha256, fhash
+        )));
     }
 
     let fname = format!("{}.bpkg", package);

@@ -9,8 +9,6 @@ readme = "README.md"
 license = "GPL-3.0"
 keywords = ["package-manager", "Homebruh", "bruh", "linux"]
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
 [dependencies]
 toml = "0.5.8"
 flate2 = "1.0.20"
