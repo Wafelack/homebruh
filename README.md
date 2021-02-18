@@ -4,6 +4,8 @@ A GNU/Linux and MacOS package manager.
 
 ## Installation
 
+- From cargo: `cargo install bruh`
+- From the releases: download the latest binary.
 - From source:
 
 ```bash

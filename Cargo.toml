@@ -3,6 +3,11 @@ name = "bruh"
 version = "0.1.0"
 authors = ["Wafelack <wafelack@protonmail.com>"]
 edition = "2018"
+documentation = "Homebruh is package manager for GNU/Linux"
+repository = "https://github.com/wafelack/homebruh"
+readme = "README.md"
+license = "AGPL-3.0"
+keywords = ["package manager", "Homebruh", "bruh", "gnu/linux"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
