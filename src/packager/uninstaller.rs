@@ -5,7 +5,7 @@ use std::{ffi::OsStr, fmt::Display, fs, fs::File, path::Path};
 use tar::Archive;
 use toml::Value;
 
-pub fn uninstall<T>(input: T) -> Result<()>
+pub fn uninstall_local<T>(input: T) -> Result<()>
 where
     T: AsRef<Path> + AsRef<OsStr> + Display + ToString,
 {

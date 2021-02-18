@@ -1,25 +1,25 @@
 use std::fs;
 
 use crate::{
-    packager::{installer::install, uninstaller::uninstall},
+    packager::{installer::install_local, uninstaller::uninstall_local},
     Result,
 };
 
 use super::download_package;
 
-pub fn inst(package: &str) -> Result<()> {
+pub fn install_remote(package: &str) -> Result<()> {
     let fname = download_package(package)?;
 
-    install(&fname)?;
+    install_local(&fname)?;
     fs::remove_file(&fname)?;
 
     Ok(())
 }
 
-pub fn uninst(package: &str) -> Result<()> {
+pub fn uninstall_remote(package: &str) -> Result<()> {
     let fname = download_package(package)?;
 
-    uninstall(&fname)?;
+    uninstall_local(&fname)?;
     fs::remove_file(&fname)?;
 
     Ok(())
