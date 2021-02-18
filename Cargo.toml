@@ -7,7 +7,7 @@ description = "Homebruh is package manager for GNU/Linux"
 repository = "https://github.com/wafelack/homebruh"
 readme = "README.md"
 license = "AGPL-3.0"
-keywords = ["package-manager", "Homebruh", "bruh", "gnu/linux"]
+keywords = ["package-manager", "Homebruh", "bruh", "linux"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
