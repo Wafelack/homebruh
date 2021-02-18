@@ -1,10 +1,13 @@
-use crate::{Result, packager::{installer::install, uninstaller::uninstall}};
 use std::fs;
+
+use crate::{
+    packager::{installer::install, uninstaller::uninstall},
+    Result,
+};
 
 use super::download_package;
 
 pub fn inst(package: &str) -> Result<()> {
-
     let fname = download_package(package)?;
 
     install(&fname)?;

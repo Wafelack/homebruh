@@ -1,17 +1,16 @@
-use std::{fs, fs::File, ffi::OsStr, fmt::Display, path::Path};
+use super::see_dir;
+use crate::{Error, Result};
 use flate2::read::GzDecoder;
+use std::{ffi::OsStr, fmt::Display, fs, fs::File, path::Path};
 use tar::Archive;
 use toml::Value;
-use crate::{Error, Result};
-use super::see_dir;
 
 pub fn uninstall<T>(input: T) -> Result<()>
-where T: AsRef<Path> + AsRef<OsStr> + Display + ToString {
-
+where
+    T: AsRef<Path> + AsRef<OsStr> + Display + ToString,
+{
     if !Path::new(&input).exists() {
-        return Err(
-            Error::OtherError(format!("Cannot find file `{}`.", &input))
-        )
+        return Err(Error::OtherError(format!("Cannot find file `{}`.", &input)));
     }
 
     let dest_folder = &input.to_string().replace(".bpkg", "");
@@ -28,9 +27,9 @@ where T: AsRef<Path> + AsRef<OsStr> + Display + ToString {
 
     if !Path::new(manifest_path).exists() {
         fs::remove_dir_all(dest_folder)?;
-        return Err(
-            Error::OtherError("Cannot find `bruh.toml` in the package.".to_owned())
-        )
+        return Err(Error::OtherError(
+            "Cannot find `bruh.toml` in the package.".to_owned(),
+        ));
     }
 
     println!("\x1b[0;32mReading\x1b[0m manifest information...");
@@ -40,9 +39,9 @@ where T: AsRef<Path> + AsRef<OsStr> + Display + ToString {
 
     if !map.contains_key("name") || !map.contains_key("version") || !map.contains_key("files") {
         fs::remove_dir_all(dest_folder)?;
-        return Err(
-            Error::OtherError(format!("One or more keys are missing from manifest."))
-        )
+        return Err(Error::OtherError(
+            "One or more keys are missing from manifest.".to_string(),
+        ));
     }
 
     let name = map["name"].as_str().unwrap();
@@ -63,17 +62,19 @@ where T: AsRef<Path> + AsRef<OsStr> + Display + ToString {
         i += 1;
 
         print!("\r{}-{} [", name, version);
-        for _ in 0..((i/dir.len())*20) {
+        for _ in 0..((i / dir.len()) * 20) {
             print!("#");
         }
-        for _ in 0..((dir.len() - i)/dir.len()*20) {
+        for _ in 0..((dir.len() - i) / dir.len() * 20) {
             print!("-");
         }
         print!("] {}/{}", i, &dir.len());
-
     }
     println!();
-    println!("\x1b[0;32mSucessfully\x1b[0m uninstalled {} v{}.", name, version);
+    println!(
+        "\x1b[0;32mSucessfully\x1b[0m uninstalled {} v{}.",
+        name, version
+    );
 
     Ok(())
 }

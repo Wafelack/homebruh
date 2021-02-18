@@ -1,19 +1,18 @@
+use super::see_dir;
+use flate2::read::GzDecoder;
+use fs::File;
 use std::{ffi::OsStr, fmt::Display, fs, path::Path, process::Command};
-use flate2::{read::GzDecoder};
-use fs::{File};
 use tar::Archive;
 use toml::Value;
-use super::see_dir;
 
 use crate::{Error, Result};
 
 pub fn install<T>(input: T) -> Result<()>
-where T: AsRef<Path> + AsRef<OsStr> + Display + ToString {
-
+where
+    T: AsRef<Path> + AsRef<OsStr> + Display,
+{
     if !Path::new(&input).exists() {
-        return Err(
-            Error::OtherError(format!("Cannot find file `{}`.", &input))
-        )
+        return Err(Error::OtherError(format!("Cannot find file `{}`.", &input)));
     }
 
     let dest_folder = &input.to_string().replace(".bpkg", "");
@@ -30,9 +29,9 @@ where T: AsRef<Path> + AsRef<OsStr> + Display + ToString {
 
     if !Path::new(manifest_path).exists() {
         fs::remove_dir_all(dest_folder)?;
-        return Err(
-            Error::OtherError("Cannot find `bruh.toml` in the package.".to_owned())
-        )
+        return Err(Error::OtherError(
+            "Cannot find `bruh.toml` in the package.".to_owned(),
+        ));
     }
 
     println!("\x1b[0;32mReading\x1b[0m manifest information...");
@@ -42,31 +41,36 @@ where T: AsRef<Path> + AsRef<OsStr> + Display + ToString {
 
     if !map.contains_key("name") || !map.contains_key("version") || !map.contains_key("files") {
         fs::remove_dir_all(dest_folder)?;
-        return Err(
-            Error::OtherError(format!("One or more keys are missing from manifest."))
-        )
+        return Err(Error::OtherError(
+            "One or more keys are missing from manifest.".to_string(),
+        ));
     }
 
     if map.contains_key("startup_script") {
         println!("\x1b[0;32mExecuting\x1b[0m startup script...");
-        let script = format!("{}/{}", dest_folder, map["startup_script"].as_str().unwrap());
+        let script = format!(
+            "{}/{}",
+            dest_folder,
+            map["startup_script"].as_str().unwrap()
+        );
 
         if !Path::new(&script).exists() {
             fs::remove_dir_all(dest_folder)?;
-            return Err(
-                Error::OtherError(format!("Cannot find `{}` in the package.", map["startup_script"].as_str().unwrap()))
-            )
+            return Err(Error::OtherError(format!(
+                "Cannot find `{}` in the package.",
+                map["startup_script"].as_str().unwrap()
+            )));
         }
 
         let status = Command::new(&script).status()?;
 
         if !status.success() {
             fs::remove_dir_all(dest_folder)?;
-            return Err(
-                Error::OtherError(format!("Startup script exited with an error code: {}.", status.code().unwrap_or(-1)))
-            )
+            return Err(Error::OtherError(format!(
+                "Startup script exited with an error code: {}.",
+                status.code().unwrap_or(-1)
+            )));
         }
-        
     }
 
     let name = map["name"].as_str().unwrap();
@@ -89,42 +93,49 @@ where T: AsRef<Path> + AsRef<OsStr> + Display + ToString {
         i += 1;
 
         print!("\r{}-{} [", name, version);
-        for _ in 0..((i/dir.len())*20) {
+        for _ in 0..((i / dir.len()) * 20) {
             print!("#");
         }
-        for _ in 0..((dir.len() - i)/dir.len()*20) {
+        for _ in 0..((dir.len() - i) / dir.len() * 20) {
             print!("-");
         }
         print!("] {}/{}", i, &dir.len());
-
     }
     println!();
 
     if map.contains_key("cleanup_script") {
         println!("\x1b[0;32mExecuting\x1b[0m cleanup script...");
-        let script = format!("{}/{}", dest_folder, map["cleanup_script"].as_str().unwrap());
+        let script = format!(
+            "{}/{}",
+            dest_folder,
+            map["cleanup_script"].as_str().unwrap()
+        );
 
         if !Path::new(&script).exists() {
             fs::remove_dir_all(dest_folder)?;
-            return Err(
-                Error::OtherError(format!("Cannot find `{}` in the package.", map["cleanup_script"].as_str().unwrap()))
-            )
+            return Err(Error::OtherError(format!(
+                "Cannot find `{}` in the package.",
+                map["cleanup_script"].as_str().unwrap()
+            )));
         }
 
         let status = Command::new(&script).status()?;
 
         if !status.success() {
             fs::remove_dir_all(dest_folder)?;
-            return Err(
-                Error::OtherError(format!("Startup script exited with an error code: {}.", status.code().unwrap_or(-1)))
-            )
+            return Err(Error::OtherError(format!(
+                "Startup script exited with an error code: {}.",
+                status.code().unwrap_or(-1)
+            )));
         }
-        
     }
 
     println!("\x1b[0;32mCleaning\x1b[0m packages files");
     fs::remove_dir_all(dest_folder)?;
-    println!("\x1b[0;32mSucessfully\x1b[0m installed {} v{}.", name, version);
+    println!(
+        "\x1b[0;32mSucessfully\x1b[0m installed {} v{}.",
+        name, version
+    );
 
     Ok(())
 }
