@@ -1,39 +1,44 @@
-use manager::{install::{inst, uninst}, sync::sync};
+mod manager;
+mod packager;
+
+use manager::{
+    install::{inst, uninst},
+    sync::sync,
+};
+
 use packager::{builder::build, installer::install, uninstaller::uninstall};
 
-mod packager;
-mod manager;
-
 fn main() -> Result<()> {
-    let args = std::env::args().skip(1).collect::<Vec<String>>();
+    let mut args = std::env::args().skip(1);
 
-    if args.len() > 0 {
-        if args.contains(&"--help".to_owned()) {
-            help();
-        } else if args.len() == 1 && &args[0] == "help" {
-            help();
-        } else if args.contains(&"--version".to_owned()) {
-            println!("{} {}",env!("CARGO_PKG_NAME"), env!("CARGO_PKG_VERSION"));
-        } else {
-            match args[0].as_str() {
-                "build" => build()?,
-                "install" => if args.len() == 2 {
-                        inst(&args[1])?;
-                    } else if args.len() == 3 && &args[1] == "-i" {
-                        install(&args[2])?;
-                    } else {
-                        println!("Usage: {} install [-i] <package>.", env!("CARGO_PKG_NAME"));
+    if let Some(arg) = args.next() {
+        match arg.as_str() {
+            "help" => help(),
+            "build" => build()?,
+            "install" => match args.next() {
+                Some(package) => match args.next() {
+                    Some(inner_package) => {
+                        if package == "-i" {
+                            install(inner_package)?;
+                        }
                     }
-                "uninstall" => if args.len() == 2 {
-                        uninst(&args[1])?;
-                    } else if args.len() == 3 && &args[1] == "-i" {
-                        uninstall(&args[2])?;
-                    } else {
-                        println!("Usage: {} uninstall [-i] <package>", env!("CARGO_PKG_NAME"))
+                    None => inst(&package)?,
+                },
+                None => println!("Usage: {} install [-i] <package>.", env!("CARGO_PKG_NAME")),
+            },
+            "uninstall" => match args.next() {
+                Some(package) => match args.next() {
+                    Some(inner_package) => {
+                        if package == "-i" {
+                            uninstall(inner_package)?;
+                        }
                     }
-                "sync" => sync()?,
-                _ => {}
-            }
+                    None => uninst(&package)?,
+                },
+                None => println!("Usage: {} uninstall [-i] <package>", env!("CARGO_PKG_NAME")),
+            },
+            "sync" => sync()?,
+            _ => help(),
         }
     }
 
@@ -72,16 +77,16 @@ pub enum Error {
     IoError(std::io::Error),
     TomlError(TomlError),
     OtherError(String),
-    RequestError(reqwest::Error)
+    RequestError(reqwest::Error),
 }
+
 #[derive(Debug)]
 pub enum TomlError {
     DeError(toml::de::Error),
-    SerError(toml::ser::Error)
+    SerError(toml::ser::Error),
 }
 
 pub type Result<T> = std::result::Result<T, Error>;
-
 
 impl From<std::io::Error> for Error {
     fn from(e: std::io::Error) -> Self {
@@ -91,9 +96,7 @@ impl From<std::io::Error> for Error {
 
 impl From<reqwest::Error> for Error {
     fn from(e: reqwest::Error) -> Self {
-        Self::RequestError(
-            e
-        )
+        Self::RequestError(e)
     }
 }
 
