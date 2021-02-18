@@ -7,7 +7,7 @@ use toml::Value;
 
 use crate::{Error, Result};
 
-pub fn install<T>(input: T) -> Result<()>
+pub fn install_local<T>(input: T) -> Result<()>
 where
     T: AsRef<Path> + AsRef<OsStr> + Display,
 {

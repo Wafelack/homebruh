@@ -2,11 +2,11 @@ mod manager;
 mod packager;
 
 use manager::{
-    install::{inst, uninst},
+    install::{install_remote, uninstall_remote},
     sync::sync,
 };
 
-use packager::{builder::build, installer::install, uninstaller::uninstall};
+use packager::{builder::build, installer::install_local, uninstaller::uninstall_local};
 
 fn main() -> Result<()> {
     let mut args = std::env::args().skip(1);
@@ -19,10 +19,10 @@ fn main() -> Result<()> {
                 Some(package) => match args.next() {
                     Some(inner_package) => {
                         if package == "-i" {
-                            install(inner_package)?;
+                            install_local(inner_package)?;
                         }
                     }
-                    None => inst(&package)?,
+                    None => install_remote(&package)?,
                 },
                 None => println!("Usage: {} install [-i] <package>.", env!("CARGO_PKG_NAME")),
             },
@@ -30,10 +30,10 @@ fn main() -> Result<()> {
                 Some(package) => match args.next() {
                     Some(inner_package) => {
                         if package == "-i" {
-                            uninstall(inner_package)?;
+                            uninstall_local(inner_package)?;
                         }
                     }
-                    None => uninst(&package)?,
+                    None => uninstall_remote(&package)?,
                 },
                 None => println!("Usage: {} uninstall [-i] <package>", env!("CARGO_PKG_NAME")),
             },
