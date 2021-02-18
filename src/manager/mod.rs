@@ -1,21 +1,15 @@
 pub mod sync;
 pub mod install;
 
-use std::{env, fs, fs::{File}, path::Path, io::Write};
+use std::{fs, fs::{File}, path::Path, io::Write};
 use toml::Value;
 use sha2::{Sha256, Digest};
 use crate::{Result, Error};
 
 fn download_package(package: &str) -> Result<String> {
-    let packages_path = match env::var("HOME") {
-        Ok(s) => format!("{}/.homebruh/packages", s),
-        Err(_) => return Err(
-            Error::OtherError("Cannot find $HOME variable.".to_owned())
-        ) 
-    };
+    let packages_path = "/etc/homebruh/packages";
 
     let pkg = &format!("{}/{}.toml", packages_path, package);
-
     if !Path::new(pkg).exists() {
         return Err(
             Error::OtherError(format!("target not found: {}", package))

@@ -1,17 +1,12 @@
-use std::{env, fs, io::Write, path::Path, str};
+use std::{fs, io::Write, path::Path, str};
 
 use fs::File;
 
-use crate::{Result, Error};
+use crate::{Result};
 
 pub fn sync() -> Result<()> {
     let community_sources_link = "https://raw.githubusercontent.com/Wafelack/homebruh/dev/community/packages.list";
-    let packages_path = match env::var("HOME") {
-        Ok(s) => format!("{}/.homebruh/packages", s),
-        Err(_) => return Err(
-            Error::OtherError("Cannot find $HOME variable.".to_owned())
-        ) 
-    };
+    let packages_path = "/etc/homebruh/packages";
 
     if !Path::new(&packages_path).exists() {
         println!("\x1b[0;32mCreating\x1b[0m local package repository.");
@@ -36,13 +31,13 @@ pub fn sync() -> Result<()> {
         f.write_all(&fcontent)?;
 
         print!("[");
-        for _ in 0..(i/len*50) {
+        for _ in 0..(i+1/len*50) {
             print!("#");
         }
-        for _ in 0..((len-i)/len*50) {
+        for _ in 0..((len-(i+1))/len*50) {
             print!("-");
         }
-        print!("] {}/{}", i, len);
+        print!("] {}/{}", i+1, len);
     }
 
     println!();

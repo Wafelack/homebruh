@@ -1,6 +1,4 @@
-use std::todo;
-
-use manager::{install::inst, sync::sync};
+use manager::{install::{inst, uninst}, sync::sync};
 use packager::{builder::build, installer::install, uninstaller::uninstall};
 
 mod packager;
@@ -27,7 +25,7 @@ fn main() -> Result<()> {
                         println!("Usage: {} install [-i] <package>.", env!("CARGO_PKG_NAME"));
                     }
                 "uninstall" => if args.len() == 2 {
-                        todo!();
+                        uninst(&args[1])?;
                     } else if args.len() == 3 && &args[1] == "-i" {
                         uninstall(&args[2])?;
                     } else {
@@ -60,10 +58,11 @@ fn help() {
     println!("\nCOMMANDS:");
     println!("\tbuild                     \tBuilds the package reffering to `bruh.toml`.");
     println!("\tinstall -i $package_file  \tInstalls the specified package file.");
-    println!("\tunisntall -i $package_file\tUninstalls the specified pacakge file.");
+    println!("\tuninstall -i $package_file\tUninstalls the specified package file.");
     println!();
     println!("\tsync                      \tSynchronizes community database.");
     println!("\tinstall $package_name     \tInstalls the specified pacakge from the sources.");
+    println!("\tuninstall $package_name   \tUninstalls the specified package.");
 
     println!();
 }
