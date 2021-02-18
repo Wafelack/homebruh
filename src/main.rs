@@ -1,6 +1,6 @@
 use std::todo;
 
-use manager::sync::sync;
+use manager::{install::inst, sync::sync};
 use packager::{builder::build, installer::install, uninstaller::uninstall};
 
 mod packager;
@@ -20,7 +20,7 @@ fn main() -> Result<()> {
             match args[0].as_str() {
                 "build" => build()?,
                 "install" => if args.len() == 2 {
-                        todo!()
+                        inst(&args[1])?;
                     } else if args.len() == 3 && &args[1] == "-i" {
                         install(&args[2])?;
                     } else {
@@ -63,6 +63,7 @@ fn help() {
     println!("\tunisntall -i $package_file\tUninstalls the specified pacakge file.");
     println!();
     println!("\tsync                      \tSynchronizes community database.");
+    println!("\tinstall $package_name     \tInstalls the specified pacakge from the sources.");
 
     println!();
 }
