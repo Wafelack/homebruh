@@ -1,4 +1,3 @@
-use super::see_dir;
 use crate::{Error, Result};
 use flate2::read::GzDecoder;
 use std::{ffi::OsStr, fmt::Display, fs, fs::File, path::Path};
@@ -10,7 +9,7 @@ where
     T: AsRef<Path> + AsRef<OsStr> + Display + ToString,
 {
     if !Path::new(&input).exists() {
-        return Err(Error::OtherError(format!("Cannot find file `{}`.", &input)));
+        return Err(Error::Other(format!("Cannot find file `{}`.", &input)));
     }
 
     let dest_folder = &input.to_string().replace(".bpkg", "");
@@ -27,7 +26,7 @@ where
 
     if !Path::new(manifest_path).exists() {
         fs::remove_dir_all(dest_folder)?;
-        return Err(Error::OtherError(
+        return Err(Error::Other(
             "Cannot find `bruh.toml` in the package.".to_owned(),
         ));
     }
@@ -39,7 +38,7 @@ where
 
     if !map.contains_key("name") || !map.contains_key("version") || !map.contains_key("files") {
         fs::remove_dir_all(dest_folder)?;
-        return Err(Error::OtherError(
+        return Err(Error::Other(
             "One or more keys are missing from manifest.".to_string(),
         ));
     }
@@ -50,16 +49,14 @@ where
 
     println!("\x1b[0;32mDeleting\x1b[0m package files...");
 
-    let dir = see_dir(fs_path)?;
-    let mut i = 0;
-    for file in &dir {
+    let dir = super::see_dir(fs_path)?;
+
+    for (i, file) in dir.iter().enumerate() {
         let dest = &format!("/{}", &file.replace(fs_path, ""));
 
         if Path::new(dest).exists() {
             fs::remove_file(dest)?;
         }
-
-        i += 1;
 
         print!("\r{}-{} [", name, version);
         for _ in 0..((i / dir.len()) * 20) {

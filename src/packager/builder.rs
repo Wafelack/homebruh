@@ -1,10 +1,16 @@
+use std::{
+    fs::{self, File},
+    path::Path,
+    time::Instant,
+};
+
+use crate::{Error, Result};
+
 use flate2::{write::GzEncoder, Compression};
-use fs::File;
-use std::{fs, path::Path, time::Instant};
 use tar::Builder;
 use toml::Value;
 
-use crate::{Error, Result};
+static INPUT: &str = "bruh.toml";
 
 /// Package file format:
 ///
@@ -14,30 +20,28 @@ use crate::{Error, Result};
 /// cleanup_script = "cleanup.sh"
 /// files = "foo/"
 pub fn build() -> Result<()> {
-    let input = "bruh.toml";
-
-    if !Path::new(&input).exists() {
-        return Err(Error::OtherError(format!(
+    if !Path::new(&INPUT).exists() {
+        return Err(Error::Other(format!(
             "Cannot find `{}` in this directory.",
-            input
+            INPUT
         )));
     }
 
     let start = Instant::now();
 
-    let tomlized: Value = toml::from_str(&fs::read_to_string(&input)?)?;
+    let tomlized: Value = toml::from_str(&fs::read_to_string(&INPUT)?)?;
 
     let map = tomlized.as_table().unwrap();
 
     if !map.contains_key("name") || !map.contains_key("version") || !map.contains_key("files") {
-        return Err(Error::OtherError(format!(
+        return Err(Error::Other(format!(
             "One or more keys are missing from `{}`.",
-            &input
+            &INPUT
         )));
     }
 
     if !Path::new(map["files"].as_str().unwrap()).exists() {
-        return Err(Error::OtherError(format!(
+        return Err(Error::Other(format!(
             "Cannot find directory `{}`.",
             map["files"].as_str().unwrap()
         )));
@@ -60,7 +64,7 @@ pub fn build() -> Result<()> {
     let enc = GzEncoder::new(file, Compression::default());
     let mut tar = Builder::new(enc);
 
-    tar.append_path(input)?;
+    tar.append_path(INPUT)?;
     println!("\x1b[0;32mPackaging\x1b[0m package manifest...");
     tar.append_dir_all(
         map["files"].as_str().unwrap(),

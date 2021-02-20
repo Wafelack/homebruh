@@ -1,3 +1,5 @@
+#![warn(clippy::pedantic, clippy::nursery)]
+
 mod manager;
 mod packager;
 
@@ -13,7 +15,6 @@ fn main() -> Result<()> {
 
     if let Some(arg) = args.next() {
         match arg.as_str() {
-            "help" => help(),
             "build" => build()?,
             "install" => match args.next() {
                 Some(package) => match args.next() {
@@ -74,10 +75,10 @@ fn help() {
 
 #[derive(Debug)]
 pub enum Error {
-    IoError(std::io::Error),
-    TomlError(TomlError),
-    OtherError(String),
-    RequestError(reqwest::Error),
+    Io(std::io::Error),
+    Toml(TomlError),
+    Other(String),
+    Request(reqwest::Error),
 }
 
 #[derive(Debug)]
@@ -90,24 +91,24 @@ pub type Result<T> = std::result::Result<T, Error>;
 
 impl From<std::io::Error> for Error {
     fn from(e: std::io::Error) -> Self {
-        Self::IoError(e)
+        Self::Io(e)
     }
 }
 
 impl From<reqwest::Error> for Error {
     fn from(e: reqwest::Error) -> Self {
-        Self::RequestError(e)
+        Self::Request(e)
     }
 }
 
 impl From<toml::ser::Error> for Error {
     fn from(e: toml::ser::Error) -> Self {
-        Self::TomlError(TomlError::SerError(e))
+        Self::Toml(TomlError::SerError(e))
     }
 }
 
 impl From<toml::de::Error> for Error {
     fn from(e: toml::de::Error) -> Self {
-        Self::TomlError(TomlError::DeError(e))
+        Self::Toml(TomlError::DeError(e))
     }
 }
