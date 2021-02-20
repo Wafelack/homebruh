@@ -81,7 +81,7 @@ To uninstall a remote package, you will run `bruh uninstall $package_name`.
 
 ## Publishing a package
 
-- [create a package](#creating-a-package).
+- [Create a package](#creating-a-package).
 - Clone the repo `git clone git@github.com:Wafelack/homebruh.git`.
 - Go in the produced folder.
 - Create a branch for your adding `git checkout -b add-$package` (obviously replace `$package` with your package name)
