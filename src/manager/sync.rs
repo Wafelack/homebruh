@@ -14,12 +14,8 @@ pub fn sync() -> crate::Result<()> {
 
     println!("\x1b[0;32mReading\x1b[0m package database.");
 
-    let list_of_packages = std::str::from_utf8(&list_of_packages).unwrap();
-    let len = list_of_packages
-        .trim()
-        .chars()
-        .filter(|&a| a == '\n')
-        .count();
+    let list_of_packages = std::str::from_utf8(&list_of_packages).unwrap().trim();
+    let len = list_of_packages.chars().filter(|&a| a == '\n').count();
 
     println!("\x1b[0;32mDownloading\x1b[0m packages manifests.");
     for (i, line) in list_of_packages.lines().enumerate() {
