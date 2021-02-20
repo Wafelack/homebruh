@@ -1,10 +1,6 @@
-use std::{fs, io::Write, path::Path, str};
+use std::{fs, io::Write, path::Path};
 
-use fs::File;
-
-use crate::Result;
-
-pub fn sync() -> Result<()> {
+pub fn sync() -> crate::Result<()> {
     let community_sources_link =
         "https://raw.githubusercontent.com/Wafelack/homebruh/dev/community/packages.list";
     let packages_path = "/etc/homebruh/packages";
@@ -18,7 +14,7 @@ pub fn sync() -> Result<()> {
         .bytes()?
         .to_vec();
     println!("\x1b[0;32mReading\x1b[0m package database.");
-    let lines = str::from_utf8(&content).unwrap().lines();
+    let lines = std::str::from_utf8(&content).unwrap().lines();
     let len = lines.clone().count();
 
     println!("\x1b[0;32mDownloading\x1b[0m packages manifests.");
@@ -32,7 +28,7 @@ pub fn sync() -> Result<()> {
 
         let path = format!("{}/{}.toml", &packages_path, line);
 
-        let mut f = File::create(path)?;
+        let mut f = fs::File::create(path)?;
         f.write_all(&fcontent)?;
 
         print!("[");
