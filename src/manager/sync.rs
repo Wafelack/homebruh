@@ -10,21 +10,25 @@ pub fn sync() -> crate::Result<()> {
         fs::create_dir_all(&packages_path)?;
     }
 
-    let content = reqwest::blocking::get(community_sources_link)?
-        .bytes()?
-        .to_vec();
+    let list_of_packages = reqwest::blocking::get(community_sources_link)?.bytes()?;
+
     println!("\x1b[0;32mReading\x1b[0m package database.");
-    let lines = std::str::from_utf8(&content).unwrap().lines();
-    let len = lines.clone().count();
+
+    let list_of_packages = std::str::from_utf8(&list_of_packages).unwrap();
+    let len = list_of_packages
+        .trim()
+        .chars()
+        .filter(|&a| a == '\n')
+        .count();
 
     println!("\x1b[0;32mDownloading\x1b[0m packages manifests.");
-    for (i, line) in lines.enumerate() {
+    for (i, line) in list_of_packages.lines().enumerate() {
         let link = format!(
             "https://raw.githubusercontent.com/Wafelack/homebruh/dev/community/{}.toml",
             line
         );
 
-        let fcontent = reqwest::blocking::get(&link)?.bytes()?.to_vec();
+        let fcontent = reqwest::blocking::get(&link)?.bytes()?;
 
         let path = format!("{}/{}.toml", &packages_path, line);
 
