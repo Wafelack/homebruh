@@ -1,0 +1,11 @@
+[package]
+name = "homebruh"
+version = "0.1.0"
+authors = ["wafelack <wafelack@protonmail.com>"]
+edition = "2018"
+
+[[bin]]
+name = "bruh"
+path = "src/main.rs"
+
+[dependencies]
